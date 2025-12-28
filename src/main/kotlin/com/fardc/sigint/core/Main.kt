@@ -1,21 +1,27 @@
 package com.fardc.sigint.core
 
-fun main() {
-    println("🛡️ SOVEREIGN-CORE-PSC | ARSENAL COMPLET V3")
-    
-    val bomb = LogicBomb()
-    val stealth = SignalStealth()
-    val rotator = EncryptionKeyRotator()
-    
-    // Protection contre l'analyse (Logic-Bomb active)
-    bomb.deploy(System.getenv("DEBUG_MODE") == "true")
+import javax.crypto.Cipher
+import java.net.ServerSocket
 
-    // Lancement du rotateur de clés de sécurité
-    rotator.startRotation()
-    
-    // Activation de l'interface furtive
-    stealth.stealthConnect("localhost", 8888)
-    
-    // Commandes opérationnelles
-    CommandInterface(OffensiveScanner(), FinCapInterception()).start()
+fun main() {
+    println("🛡️ SOVEREIGN-CORE-PSC | SYSTÈME D'ARMEMENT")
+    println("🔍 Diagnostic de l'environnement en cours...")
+
+    val isNetworkOk = try {
+        ServerSocket(0).use { true }
+    } catch (e: Exception) { false }
+
+    val isCryptoOk = try {
+        Cipher.getInstance("AES") != null
+    } catch (e: Exception) { false }
+
+    println("📡 Réseau Bas-Niveau : ${if (isNetworkOk) "✅ OPÉRATIONNEL" else "❌ BLOQUÉ"}")
+    println("🔐 Chiffrement AES : ${if (isCryptoOk) "✅ OPÉRATIONNEL" else "❌ BLOQUÉ"}")
+
+    if (isNetworkOk && isCryptoOk) {
+        println("🚀 TOUT EST OK. PASSAGE EN MODE COMBAT ACTIF.")
+        // Lancer ici vos modules réels
+    } else {
+        println("🚨 ÉTAT CRITIQUE : L'environnement GitHub bride toujours les capacités.")
+    }
 }
