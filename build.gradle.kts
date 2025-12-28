@@ -6,17 +6,13 @@ plugins {
 group = "com.fardc.sigint"
 version = "1.0"
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
     implementation(kotlin("stdlib"))
 }
 
-kotlin {
-    jvmToolchain(17)
-}
+kotlin { jvmToolchain(17) }
 
 tasks.shadowJar {
     archiveBaseName.set("sigint-core")
