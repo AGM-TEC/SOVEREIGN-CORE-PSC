@@ -1,81 +1,23 @@
-# 🔧 Gradle
 .gradle/
 build/
-!gradle/wrapper/gradle-wrapper.properties
-!gradlew
-!gradlew.bat
-
-# 🧪 Kotlin/Java build
+kotlinc/
 *.class
 *.jar
-*.war
-*.ear
 *.log
-
-# 🛠️ IDEs
-.idea/
-*.iml
-*.ipr
-*.iws
-.vscode/
-.vscode-test/
-
-# 📦 Dependency caches
-**/out/
-**/target/
-**/.classpath
-**/.project
-**/.settings/
-**/.factorypath
-
-# 🧰 Kotlin compiler local
-kotlinc/
-kotlin-stdlib.jar
-
-# 🧾 OS & shell
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
-*.bak
 *.tmp
-*.orig
-*.rej
-*.patch
-
-# 🧬 Scripts et artefacts tactiques
-*.sh~
-*.old.sh
-*.log
+*.swp
+.idea/
+.vscode/
+*.iml
+*.bak
+*.old
 *.trace
 *.dump
-
-# 🧠 Copilot & AI agents
-copilot/
-agent/
-agent-config.json
-
-# 🧪 Tests et rapports
-/test-output/
-test-results/
-*.test.js
-*.spec.js
-*.spec.kt
-*.coverage
-*.lcov
-
-# 📜 Markdown générés
-*.md~
-*.bak.md
-
-# 🔐 Sécurité
 *.pem
 *.key
 *.crt
-*.asc
-*.gpg
 *.jks
-
-# 🧭 Git
-.git/
-.gitignore~
+*.gpg
+*.asc
+.DS_Store
+Thumbs.db
