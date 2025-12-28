@@ -1,4 +1,3 @@
 -jvm-target 17
 -Xjdk-release=17
--no-stdlib
--no-jdk
+-Xuse-ir
