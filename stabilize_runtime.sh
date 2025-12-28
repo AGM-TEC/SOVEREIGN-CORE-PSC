@@ -3,32 +3,53 @@ set -euo pipefail
 
 echo "🛡️ Stabilisation SOVEREIGN-CORE-PSC..."
 
-# 1) Java 17
-if [ -d "/usr/lib/jvm/java-17-openjdk-amd64" ]; then
-  export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
-elif [ -n "${JAVA_HOME_17_X64:-}" ]; then
-  export JAVA_HOME="$JAVA_HOME_17_X64"
-else
-  echo "❌ JDK 17 introuvable"; exit 1
-fi
-export PATH="$JAVA_HOME/bin:$PATH"
-java -version || { echo "❌ JDK non opérationnel"; exit 1; }
-
-# 2) Wrapper
+# 1) Nettoyage
 rm -rf gradle gradlew gradlew.bat .gradle build/
-gradle wrapper --gradle-version 8.2 --distribution-type bin
+
+# 2) Wrapper de transition (utilise gradle global si présent)
+gradle wrapper --gradle-version 9.2.1 --distribution-type bin || true
+# Permissions + fins de ligne
 if command -v dos2unix >/dev/null 2>&1; then dos2unix gradlew || true; fi
 chmod +x gradlew
-./gradlew -v | grep "Gradle 8.2" >/dev/null || { echo "❌ Wrapper non verrouillé"; exit 1; }
 
-# 3) Build
+# 3) Verrouillage wrapper 8.2 (stabilité)
+./gradlew wrapper --gradle-version 8.2 --distribution-type bin
+chmod +x gradlew
+
+# 4) Configuration toolchain Java 17 (auto-provision)
+# Assure le téléchargement du JDK 17 Temurin par Gradle
+cat > settings.gradle.kts <<'EOF'
+rootProject.name = "SOVEREIGN-CORE-PSC"
+
+toolchainManagement {
+  jvm {
+    javaRepositories {
+      repository("temurin") {
+        temurin()
+      }
+    }
+  }
+}
+EOF
+
+# Propriétés Gradle (auto-download)
+cat > gradle.properties <<'EOF'
+org.gradle.java.installations.auto-download=true
+org.gradle.java.installations.enabled=true
+EOF
+
+# 5) Build shadow
 ./gradlew clean shadowJar --no-daemon
 
-# 4) JAR
-JAR=build/libs/sigint-core-all.jar
+# 6) Vérifications JAR + manifest
+JAR="build/libs/sigint-core-all.jar"
 test -f "$JAR" || { echo "❌ JAR non généré"; exit 1; }
 
-# 5) Smoke test
+jar xf "$JAR" META-INF/MANIFEST.MF
+grep -q "Main-Class: com.fardc.sigint.core.MainKt" META-INF/MANIFEST.MF || {
+  echo "❌ Main-Class incorrect dans le JAR"; exit 1; }
+
+# 7) Smoke test
 java -jar "$JAR" || { echo "❌ Exécution échouée"; exit 1; }
 
-echo "🎯 Stabilisation réussie : $JAR"
+echo "✅ Stabilisation réussie : $JAR"
