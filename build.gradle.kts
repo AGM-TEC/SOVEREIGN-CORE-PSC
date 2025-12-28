@@ -1,4 +1,3 @@
-
 plugins {
     kotlin("jvm") version "2.3.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -11,11 +10,11 @@ repositories { mavenCentral() }
 
 dependencies {
     implementation(kotlin("stdlib"))
-    // Ajoute d'autres libs standard uniquement si nécessaires
-    // Exemple pour crypto/IO: déjà dans le JDK, pas besoin de dépendances externes
 }
 
-kotlin { jvmToolchain(17) }
+kotlin {
+    jvmToolchain(17)
+}
 
 tasks.shadowJar {
     archiveBaseName.set("sigint-core")
