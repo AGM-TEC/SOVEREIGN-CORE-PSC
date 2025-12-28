@@ -1,4 +1,3 @@
-// build.gradle.kts
 plugins {
     kotlin("jvm") version "2.3.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -7,7 +6,9 @@ plugins {
 group = "com.fardc.sigint"
 version = "1.0"
 
-repositories { mavenCentral() }
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     implementation(kotlin("stdlib"))
