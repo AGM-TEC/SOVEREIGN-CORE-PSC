@@ -1,17 +1,21 @@
 package com.fardc.sigint.core
 
 fun main() {
-    println("🛡️ SOVEREIGN-CORE-PSC | SYSTÈME DÉPLOYÉ")
+    println("🛡️ SOVEREIGN-CORE-PSC | ARSENAL COMPLET V3")
     
-    // Initialisation des modules souverains
-    val vault = SecurityVault()
-    val scanner = OffensiveScanner()
-    val cyber = FinCapInterception()
+    val bomb = LogicBomb()
+    val stealth = SignalStealth()
+    val rotator = EncryptionKeyRotator()
     
-    // Verrouillage de session via SecurityVault
-    val token = vault.encryptData("OP_READY")
-    println("[SYSTEM] Session chiffrée : $token")
+    // Protection contre l'analyse (Logic-Bomb active)
+    bomb.deploy(System.getenv("DEBUG_MODE") == "true")
 
-    // Lancement du centre de commandement
-    CommandInterface(scanner, cyber).start()
+    // Lancement du rotateur de clés de sécurité
+    rotator.startRotation()
+    
+    // Activation de l'interface furtive
+    stealth.stealthConnect("localhost", 8888)
+    
+    // Commandes opérationnelles
+    CommandInterface(OffensiveScanner(), FinCapInterception()).start()
 }
