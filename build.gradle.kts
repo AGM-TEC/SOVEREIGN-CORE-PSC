@@ -1,3 +1,4 @@
+// build.gradle.kts
 plugins {
     kotlin("jvm") version "2.3.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
