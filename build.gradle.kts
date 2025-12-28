@@ -17,12 +17,5 @@ kotlin { jvmToolchain(17) }
 tasks.shadowJar {
     archiveBaseName.set("sigint-core")
     archiveClassifier.set("all")
-    manifest {
-        attributes["Main-Class"] = "com.fardc.sigint.core.MainKt"
-    }
-}
-tasks.shadowJar {
-    archiveBaseName.set("sigint-core")
-    archiveClassifier.set("all")
     manifest { attributes["Main-Class"] = "com.fardc.sigint.core.MainKt"] }
 }
