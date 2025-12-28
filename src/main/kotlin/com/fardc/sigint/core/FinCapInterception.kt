@@ -1,23 +1,31 @@
 package com.fardc.sigint.core
 
 import java.net.ServerSocket
+import java.net.InetAddress
 import kotlin.concurrent.thread
 
 /**
- * Implémentation réelle du Manuel_Cyber_Fin_Capacity.md
+ * MODULE D'INTERCEPTION CYBER ET FINANCIÈRE
+ * Opérationnel selon le protocole SOVEREIGN-CORE-PSC
  */
-class FinCapInterception(private val gatekeeper: Gatekeeper) {
-    fun launchFinancialMonitor() {
-        if (!gatekeeper.validateAccess("FIN-CAP")) return
+class FinCapInterception {
+    fun runInterceptionMode() {
+        println("[CYBER-OP] Initialisation de l'interception sur le port 8889...")
         
-        println("[FIN-CAP] Surveillance des flux économiques activée.")
         thread {
             try {
-                // Écoute sur un port spécifique aux flux de données
-                val socket = ServerSocket(8889)
-                println("[SIGINT] Capture des signaux financiers en cours...")
+                // Création d'un socket réel pour capturer les flux
+                val server = ServerSocket(8889)
+                println("[SIGINT] Capture active des paquets financiers.")
+                
+                while (true) {
+                    val target = server.accept()
+                    val ip = target.inetAddress.hostAddress
+                    println("[ALERTE] Flux détecté - Origine : $ip")
+                    target.close()
+                }
             } catch (e: Exception) {
-                println("[ERREUR] Interception bloquée : ${e.message}")
+                println("[ERREUR CRITIQUE] Interception interrompue : ${e.message}")
             }
         }
     }
