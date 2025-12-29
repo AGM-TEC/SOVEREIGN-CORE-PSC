@@ -52,3 +52,33 @@ release:
 	@echo "🚀 Lancement du Second Release (Environnement Isolé)..."
 	docker-compose -f $(DOCKER_DIR)/docker-compose.yml up --build
 
+# --- CONFIGURATION SOUVERAINE ---
+CONF_DIR := core/config
+BIN_DIR  := core/bin
+
+.PHONY: all clean build release
+
+all: build
+
+# 1. Préparation de l'environnement (Restauration des liens)
+prep:
+	@echo "🔧 Alignement des fichiers de configuration..."
+	cp $(CONF_DIR)/build.gradle.kts .
+	cp $(CONF_DIR)/settings.gradle.kts .
+	cp $(CONF_DIR)/gradle.properties .
+	chmod +x gradlew
+
+# 2. Build réel (Second Release)
+build: prep
+	@echo "🏗️ Compilation du binaire SOVEREIGN-CORE..."
+	./gradlew clean shadowJar --no-daemon
+	mkdir -p $(BIN_DIR)
+	mv build/libs/sigint-core-all.jar $(BIN_DIR)/
+	@echo "✅ Binaire généré dans $(BIN_DIR)/"
+
+# 3. Nettoyage de la racine (Maintien de l'ordre)
+clean:
+	@echo "🧹 Nettoyage de la racine et des artefacts..."
+	rm -f build.gradle.kts settings.gradle.kts gradle.properties
+	rm -rf build/ .gradle/
+
