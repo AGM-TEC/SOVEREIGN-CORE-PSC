@@ -26,3 +26,29 @@ release: lock
 
 clean:
 	rm -rf build/ .gradle/ release/
+
+# --- CHEMINS TACTIQUES ---
+SCRIPT_DIR := scripts/build
+DOCKER_DIR := infra/docker
+BIN_DIR    := core/bin
+
+.PHONY: all clean build release
+
+all: build
+
+# 1. Nettoyage des résidus empoisonnés (Fix Java 25)
+clean:
+	@echo "🧹 Purge des artefacts corrompus..."
+	rm -rf .gradle build $(BIN_DIR)/*
+	
+# 2. Compilation via la toolchain verrouillée
+build:
+	@echo "🏗️ Compilation du noyau SOVEREIGN-CORE..."
+	chmod +x $(SCRIPT_DIR)/deploy.sh
+	./$(SCRIPT_DIR)/deploy.sh
+
+# 3. Release Docker (Indépendance totale)
+release:
+	@echo "🚀 Lancement du Second Release (Environnement Isolé)..."
+	docker-compose -f $(DOCKER_DIR)/docker-compose.yml up --build
+
