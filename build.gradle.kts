@@ -1,6 +1,6 @@
 // build.gradle.kts
 plugins {
-    kotlin("jvm") version "1.9.24"    // version stable côté Gradle 8.2
+    kotlin("jvm") version "1.9.24"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -9,10 +9,7 @@ version = "1.0"
 
 repositories { mavenCentral() }
 
-dependencies {
-    implementation(kotlin("stdlib"))
-    // Ajoute ici tes libs si besoin (aucune nécessaire pour java.net/Thread: c’est dans le JDK)
-}
+dependencies { implementation(kotlin("stdlib")) }
 
 kotlin { jvmToolchain(17) }
 
