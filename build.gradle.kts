@@ -1,5 +1,6 @@
+// build.gradle.kts
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.24"    // version stable côté Gradle 8.2
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -10,14 +11,21 @@ repositories { mavenCentral() }
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("io.javalin:javalin:5.6.1")
-    implementation("org.slf4j:slf4j-simple:2.0.7")
+    // Ajoute ici tes libs si besoin (aucune nécessaire pour java.net/Thread: c’est dans le JDK)
 }
 
 kotlin { jvmToolchain(17) }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xno-param-assertions", "-Xno-call-assertions")
+    }
+}
+
 tasks.shadowJar {
     archiveBaseName.set("sigint-core")
     archiveClassifier.set("all")
-    manifest { attributes["Main-Class"] = "com.fardc.sigint.core.MainKt" }
+    manifest {
+        attributes["Main-Class"] = "com.fardc.sigint.core.MainKt"
+    }
 }
