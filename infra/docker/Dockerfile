@@ -15,3 +15,4 @@ WORKDIR /app
 COPY --from=builder /workspace/build/libs/sigint-core-all.jar /app/sigint-core-all.jar
 
 ENTRYPOINT ["java", "-jar", "sigint-core-all.jar"]
+
