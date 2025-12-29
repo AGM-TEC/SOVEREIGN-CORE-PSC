@@ -1,7 +1,4 @@
 {
-    "name": "SOVEREIGN-CORE-OPERATIONS",
-    "image": "mcr.microsoft.com/devcontainers/java:17-bullseye",
-{
     "features": {
         "ghcr.io/devcontainers/features/docker-in-docker:1": {}
     },
