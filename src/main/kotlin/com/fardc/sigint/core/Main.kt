@@ -25,3 +25,21 @@ fun main() {
         println("🚨 ÉTAT CRITIQUE : L'environnement GitHub bride toujours les capacités.")
     }
 }
+package com.fardc.sigint.core
+
+import io.javalin.Javalin // Añadir esta dependencia al build.gradle.kts
+
+fun main() {
+    val app = Javalin.create().start(7070)
+    
+    app.get("/") { ctx -> 
+        ctx.html("<h1>🛡️ Mando Soberano PSC</h1>" +
+                 "<button onclick=\"fetch('/active/sniffer')\">Activar Sniffer</button>" +
+                 "<button onclick=\"fetch('/active/jammer')\">Activar Jammer</button>")
+    }
+
+    app.get("/active/sniffer") { ctx ->
+        PacketSniffer().startSniffing(8080)
+        ctx.result("📡 Sniffer en curso...")
+    }
+}
