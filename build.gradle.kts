@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.8.21" // Version stable de repli
+    kotlin("jvm") version "1.9.24"            // Compatible Gradle 8.2, évite BuildFlowService
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -11,21 +11,20 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation(kotlin("stdlib"))
     implementation("io.javalin:javalin:5.6.1")
     implementation("org.slf4j:slf4j-simple:2.0.7")
 }
 
-// Verrouillage de la toolchain contre l'empoisonnement Java 25
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(17)                          // Verrouillage Java 17
 }
 
 tasks.shadowJar {
     archiveBaseName.set("sigint-core")
     archiveClassifier.set("all")
+    mergeServiceFiles()                       // Fusionne les fichiers de services si présents
     manifest {
-        attributes["Main-Class"] = "com.fardc.sigint.core.MainKt"
+        attributes["Main-Class"] = "com.fardc.sigint.core.MainKt"]
     }
 }
