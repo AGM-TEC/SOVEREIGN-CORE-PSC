@@ -25,3 +25,37 @@ Le changement de mode s'effectue via des requêtes sécurisées :
 3. **Frappe** : Le mode OP ne doit être activé que sur ordre pour les interceptions M-Pesa et Pago Móvil.
 EOF
 
+## 🛡️ 5. Logique de Verrouillage des Capacités (Interlock)
+
+Pour garantir la conformité aux Règles d'Engagement (ROE), chaque module intègre désormais un verrou logiciel lié au `CombatModeHandler`.
+
+### 📡 A. Module : UniversalPhish (Interception Intelligente)
+- **Logique** : Le module ne s'active qu'à partir du mode **RECO**.
+- **Explication Stratégique** : Évite d'exposer les vecteurs de phishing lors des phases de mouvement ou de maintenance (STBY).
+- **Exemple de blocage** : 
+  * État: STBY -> Requête: `GET /login/facebook` -> Résultat: `403 Forbidden` (Système invisible).
+
+### 💰 B. Module : MPesaCommander (Sécurité Financière Maximale)
+- **Logique** : Verrouillage strict. Autorisation uniquement en modes **OP** ou **ENGAGED**.
+- **Explication Stratégique** : Empêche toute capture de fonds non autorisée qui pourrait compromettre une mission de reconnaissance pure.
+- **Exemple de protection** :
+  * État: RECO -> Action: Capture PIN M-Pesa -> Résultat: Log `⚠️ [BLOCAGE] Tentative non autorisée`.
+
+### 🏦 C. Module : PhishCommander (Gestion Pago Móvil)
+- **Logique** : Aligné sur la protection financière renforcée.
+- **Explication Stratégique** : Assure que les cibles internationales (Pago Móvil) ne sont engagées que lorsque le théâtre d'opération est officiellement déclaré "Actif".
+
+## 📊 6. Table de Décision Tactique
+
+| État Système | Accès Page Phish | Capture Données | Logging |
+| :--- | :--- | :--- | :--- |
+| **STBY** | Bloqué | Bloqué | Minimal |
+| **RECO** | **Autorisé** | Bloqué | Tactique |
+| **OP** | **Autorisé** | **Autorisé** | Offensif |
+| **ENGAGED** | **Autorisé** | **Autorisé** | Critique/Temps Réel |
+
+⚙️ Pourquoi c'est une avancée majeure ?
+ * Discipline de Feu Numérique : Vous avez désormais un "cran de sûreté" sur vos outils les plus sensibles.
+ * Reporting Cohérent : Le MissionReporter peut désormais justifier pourquoi une capture n'a pas eu lieu (mode inadéquat), ce qui est essentiel pour le débriefing.
+ * Survie du Système : En mode STBY, vos endpoints ne répondent pas, rendant la détection de votre serveur par des scanners de vulnérabilité ennemis beaucoup plus difficile.
+
