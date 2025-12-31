@@ -35,3 +35,53 @@ Une fois activé, le noyau expose les points d'accès suivants pour le pilotage 
 Ce projet est protégé par la Military License for ELINT/SIGINT Operations. Toute utilisation doit être conforme aux doctrines de défense de la souveraineté numérique.
 Développé par Bombele | Release v2.0 - Full Tactical Mobile Edition.
 
+
+# 🛡️ SOVEREIGN-CORE-PSC v2.3.0
+
+**Système Intégré de Renseignement Électronique (SIGINT) - Force de Frappe Numérique**
+
+## 📋 Description
+SOVEREIGN-CORE est le noyau central de la suite PSC, conçu pour la collecte, l'analyse et le rapportage de données tactiques. Cette version v2.3.0 intègre des modules avancés d'interception et un système de reporting automatisé pour l'État-Major.
+
+## 🚀 Guide de Déploiement Rapide (Termux / Linux)
+
+### 1. Préparation de l'environnement
+Assurez-vous d'avoir Java 17+ et Kotlin installés, puis clonez le dépôt :
+bash
+git clone [https://github.com/Bombele/SOVEREIGN-CORE-PSC.git](https://github.com/Bombele/SOVEREIGN-CORE-PSC.git)
+cd SOVEREIGN-CORE-PSC
+
+2. Installation des dépendances
+Le dossier libs/ étant protégé, récupérez les bibliothèques nécessaires :
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+
+3. Compilation de la Release
+Générez le binaire autonome :
+chmod +x scripts/build_release.sh
+./scripts/build_release.sh
+
+4. Lancement du Noyau
+java -cp "dist/sigint-core-all.jar:libs/*" com.fardc.sigint.core.MainKt
+
+🛠️ Modules Actifs
+ * MPesaCommander : Interception et sécurisation des flux financiers M-Pesa.
+ * UniversalPhish : Moteur de collecte multi-cibles adaptatif.
+ * MissionReporter : Générateur de rapports PDF/Text pour le commandement.
+ * SecurityVault : Chiffrement AES des données collectées.
+📡 Accès Opérationnels
+ * Status Système : http://localhost:7070/status
+ * Portail M-Pesa : http://localhost:7070/login/mpesa
+ * Rapports Tactiques : http://localhost:7070/admin/report
+⚠️ DISCLAIMER : Cet outil est destiné à un usage strictement autorisé dans le cadre de simulations de défense et de tests de pénétration légaux.
+EOF
+
+### 3. ⚔️ Mise à jour du dépôt
+
+Une fois le fichier créé, envoyez-le sur GitHub :
+
+bash
+git add README.md
+git commit -m "docs: mise à jour du README officiel v2.3.0"
+git push origin main
+
