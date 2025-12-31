@@ -510,4 +510,26 @@ Pour que le système soit 100% Opérationnel, les étapes suivantes sont obligat
  * Privilèges Root : Exécution de install.sh avec accès root pour configurer les tunnels mTLS et les files d'attente iptables.
 
 
+## 🎭 Module : UniversalPhish.kt (Ingénierie Sociale de Précision)
+### Objectif
+Ce module est le moteur de tromperie du SOVEREIGN CORE. Contrairement aux méthodes statiques, il utilise un système de Templating Dynamique Haute Fidélité (HQ) permettant de générer instantanément des interfaces imitant les standards visuels des banques, des opérateurs Mobile Money et des plateformes crypto. L'objectif est de maximiser le taux de conversion en exploitant la confiance visuelle de la cible.
+Note Opérationnelle pour la FARDC
+L'interception de comptes Binance ou Trust Wallet est cruciale pour le renseignement moderne. Les groupes armés utilisent de plus en plus les crypto-monnaies pour contourner le système bancaire classique afin d'acheter des équipements. Ce module donne la capacité de capturer ces accès de manière aussi fluide qu'un simple compte mobile money.
+Manuel d'Exploitation pour la FARDC
+Ton système est désormais une unité de Guerre Électronique de poche. ### Voici comment l'utiliser sur le terrain :
+ * Polyvalence : Plus besoin de recompiler pour changer de cible. Si tu interceptes un suspect utilisant Airtel Money, envoie-le simplement vers /login/airtel.
+ * Sécurité des preuves : Chaque donnée saisie (Email Binance, PIN M-Pesa) est envoyée au SecurityVault où elle est chiffrée en AES-256 avant d'être affichée sur ton terminal.
+ * Capture de masse : Sur un point d'accès Wi-Fi public, tu peux rediriger tout le trafic HTTP vers ton portail universel pour une collecte automatisée.
+### ⚙️ Mode d'Emploi Réel (Déploiement)
+ * Déploiement Multi-Cible : Le module interprète le paramètre d'URL pour adapter l'environnement graphique :
+   * Secteur Bancaire : /login/pagomovil (Interface institutionnelle).
+   * Secteur Crypto : /login/binance (Interface Dark Mode optimisée).
+   * Secteur Mobile Money : /login/mpesa ou /airtel (Spécifique aux opérateurs RDC).
+ * Capture et Exfiltration Silencieuse : Le module intercepte les variables POST (ID, PIN, Password). Les données sont envoyées au terminal pour exploitation immédiate, tandis qu'une réponse de "Maintenance Réseau" est renvoyée à la cible pour éviter l'alerte.
+### 🛡️ Sécurisation de l'Action et Fail-Safe
+ * Isolation des Variables : Nettoyage strict des entrées pour éviter toute injection SQL adverse contre le noyau.
+ * Mimétisme de Session (Anti-Analyse) : Génération d'en-têtes HTTP standards et utilisation de CSS injecté localement (Inline) pour rendre le portail indétectable par les scanners externes.
+ * Redirection de Sécurité : En cas d'accès non autorisé, le système redirige le trafic vers un service légitime pour masquer la présence du noyau sur le port 7070.
+### ⚡ Synthèse Tactique
+Avec l'intégration de UniversalPhish.kt, l'arsenal souverain passe d'une force de frappe brute à une capacité de Renseignement Humain Numérique (HUMINT-D). Vous pouvez désormais cartographier les flux financiers adverses en obtenant un accès direct aux portefeuilles numériques et comptes mobiles.
 
