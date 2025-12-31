@@ -1,3 +1,4 @@
+cat << 'EOF' > build.gradle.kts
 plugins {
     // Passage à une version plus robuste pour Termux
     kotlin("jvm") version "1.9.10" 
@@ -30,3 +31,4 @@ tasks.shadowJar {
     archiveClassifier.set("")
     archiveVersion.set("")
 }
+EOF
