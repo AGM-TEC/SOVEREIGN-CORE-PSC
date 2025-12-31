@@ -1,20 +1,34 @@
 package com.fardc.sigint.core
 
-import io.javalin.Javalin
-import io.javalin.openapi.plugin.OpenApiPlugin
+import java.net.InetSocketAddress
+import java.net.ServerSocket
+import java.time.Instant
 
-/**
- * NOYAU SOUVERAIN V4 - ACTIVATION SSL & TERRAIN
- */
 fun main() {
-    val app = Javalin.create { config ->
-        config.plugins.register(OpenApiPlugin { })
-        // Forcer le HTTPS via le tunnel Codespace
-    }.start(7070)
+    println("✅ SOVEREIGN CORE boot OK @ " + Instant.now())
+    // Serveur minimal sur port éphémère (0) pour test local
+    val server = ServerSocket()
+    server.bind(InetSocketAddress("127.0.0.1", 0))
+    val port = server.localPort
+    println("📡 Minimal socket online on 127.0.0.1:$port")
 
-    println("🛡️ TUNNEL SÉCURISÉ ACTIF SUR LE PORT 7070")
+    // Thread d'acceptation simple
+    Thread {
+        try {
+            val client = server.accept()
+            client.getOutputStream().use { out ->
+                out.write("COMBAT_READY\n".toByteArray())
+                out.flush()
+            }
+            client.close()
+        } catch (e: Exception) {
+            System.err.println("Socket error: " + e.message)
+        } finally {
+            try { server.close() } catch (_: Exception) {}
+        }
+    }.start()
 
-    app.get("/status") { ctx -> 
-        ctx.json(mapOf("status" to "COMBAT_READY", "encryption" to "AES-256-GCM"))
-    }
+    // Garde le processus vivant quelques secondes puis termine
+    Thread.sleep(3000)
+    println("🛑 Shutdown.")
 }
