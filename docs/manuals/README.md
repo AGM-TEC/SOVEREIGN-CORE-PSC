@@ -57,7 +57,7 @@ Il doit être la porte d'entrée de ton système, alliant clarté technique et d
 * **SignalJammer** : Saturation de ports critiques pour neutralisation des flux financiers.
 
 ## 🛠️ Installation & Build
-```bash
+bash
 # Cloner et Compiler
 git clone [URL_DU_DEPOT]
 ./gradlew build
@@ -92,7 +92,7 @@ Indispensable pour suivre l'évolution de l'arsenal.
 
 Pour transformer tes efforts actuels en un artefact publiable, exécute cette séquence finale :
 
-```bash
+bash
 # 1. Créer le dossier des artefacts
 mkdir -p dist/
 
