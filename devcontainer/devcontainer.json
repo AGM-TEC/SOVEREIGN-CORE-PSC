@@ -1,9 +1,17 @@
 {
+    "name": "SOVEREIGN-CORE-DEV",
+    "image": "mcr.microsoft.com/devcontainers/java:17-bullseye",
     "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:1": {}
+        "ghcr.io/devcontainers/features/common-utils:1": {},
+        "ghcr.io/devcontainers-contrib/features/kotlin-sdkman:1": {}
     },
-    "runArgs": [
-        "--cap-add=NET_RAW", 
-        "--cap-add=NET_ADMIN"
-    ]
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "fwcd.kotlin",
+                "vscjava.vscode-java-pack"
+            ]
+        }
+    },
+    "postCreateCommand": "chmod +x scripts/*.sh"
 }
