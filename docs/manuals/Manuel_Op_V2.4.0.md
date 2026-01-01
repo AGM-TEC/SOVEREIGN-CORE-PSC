@@ -107,3 +107,29 @@ Le système garantit la continuité de mission même en cas de perte totale des 
 En mode **ENGAGED**, si le lien principal vers l'État-Major tombe, le `FallbackTransmitter` prend le relais automatiquement pour exfiltrer les preuves du `SecurityVault`.
 
 
+
+# 🛡️ MANUEL OPÉRATIONNEL : SOVEREIGN CORE v2.4.0
+Classification : SECRET DÉFENSE (FARDC)
+Système : Unité de Renseignement et d'Action Électronique
+## 1. Architecture Modulaire Intégrée
+Le système n'est plus un simple noyau SIGINT, mais une plateforme de commandement centralisée reliant les modules suivants :
+ * SOVEREIGN-CORE (src/core) : Le cerveau gérant le chiffrement AES-256 et le routage des données.
+ * SIGINT (sigint/) : Module d'interception et de classification des menaces par IA.
+ * BFT (bft/) : Suivi des forces alliées (Blue Force Tracking) pour éviter les tirs fratricides.
+ * OFFENSIVE (Sovereign-Offensive/) : Arsenal de neutralisation cyber et d'opérations d'influence.
+ * INFRA (infra/ & services/) : Monitoring de la santé du réseau Mesh et de l'infrastructure serveur.
+## 2. Guide de Déploiement Rapide (Termux)
+Pour lancer l'intégralité de l'arsenal, l'opérateur doit utiliser le script de déploiement automatisé :
+cd ~/SOVEREIGN-CORE-PSC
+./deploy.sh
+
+Le script fusionne les sources, compile le Fat-JAR et active le serveur sur le port 7070.
+## 3. Protocoles d'Accès Tactique
+L'interface de commandement est accessible via tout navigateur sur le réseau sécurisé :
+ * Tableau de Bord Global : http://localhost:7070/ (Redirection automatique vers l'interface tactique).
+ * Statut des Menaces (API) : http://localhost:7070/api/status.
+ * Interface SIGINT : Accès direct via /sigint/.
+## 4. Sécurité et Résilience
+ * SecurityVault : Chiffrement systématique des logs et des flux de données entrants.
+ * Mesh Resilience : Le système peut fonctionner en mode dégradé sans internet, via le protocole Mesh de synchronisation.
+ * Neutralisation : En cas de capture, l'arrêt du processus Java verrouille instantanément l'accès aux clés de déchiffrement.
