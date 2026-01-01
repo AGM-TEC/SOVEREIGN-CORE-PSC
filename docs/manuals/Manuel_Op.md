@@ -1,39 +1,7 @@
 # 📘 Manuel Opérationnel – Combat-Ready System SIGINT
 
-## 1. Introduction
-Objectif : fournir un système SIGINT/ELINT combat-ready, modulaire, auditable et certifiable.
-Contexte : conçu pour une unité mobile de guerre électronique, avec résilience en conditions dégradées.
-Valeur stratégique : souveraineté nationale, transmission institutionnelle, alignement avec normes OTAN/ITU.
 
-## 2. Architecture générale (mise à jour)
-
-Modules principaux du dépôt :
-
-- core/ : moteur central, sécurité, gestion des flux
-- sigint/ : capture, classification et géolocalisation des signaux
-- infra/ : transmission sécurisée, cyber résilience, fallback multi-canal
-- specs/ : documentation technique, matrices de conformité, operational_spec
-- docs/ : SOP, manuels opérateurs, rapports institutionnels
-- data/ : signatures radio, bases de menaces (fardc_threat_db.json, rdc_rebel_nets.json), cartes offline (MBTiles)
-- services/ : IA embarquée (SignalClassifier.kt, AnomalyDetector.kt), mesh et DSP
-- integration/ : description des modules d’intégration et interfaces inter-systèmes
-- tests/ : scénarios de test (panic_wipe_test.md, validation geofence, etc.)
-- ui/ : interface opérateur (StatusHUD.kt, affichage terrain)
-- makefile/ : scripts de compilation et déploiement
-- Military License : licence spécifique pour usage militaire
-- system_index.md : index global du système pour navigation et audit
-- SIGINT_System_Manual.md : manuel technique du système
-- manuel_op : manuel opérationnel en cours de rédaction
-
-Flux opérationnel :
-1. Capture radio (RTL-SDR, HackRF) via sigint/
-2. Classification IA embarquée (TensorFlow Lite) via services/
-3. Géolocalisation (TDOA/AoA) via fusion_geo/
-4. Transmission sécurisée (mesh, SMS chiffré, HF analogique) via infra/
-5. Audit et documentation automatique via specs/ et MissionLogger
-6. Interface opérateur via ui/ pour retour terrain
-
-## 3. Procédures Opérationnelles (SOP) – Mise à jour
+## Procédures Opérationnelles (SOP) – Mise à jour
 
 ### Mise en route
 - Vérifier matériel : SDR (RTL-SDR, HackRF), antennes, batteries.
@@ -70,7 +38,7 @@ Flux opérationnel :
   - Logs critiques (Evidence Mode).
   - Messages Mesh reçus des camarades.
 
-## 4. Sécurité et Résilience – Mise à jour
+## Sécurité et Résilience – Mise à jour
 
 ### SensitiveStore
 - Fonction : effacement complet des données sensibles.
@@ -101,7 +69,7 @@ Flux opérationnel :
 - Autodiagnostic : surveillance continue de l’intégrité système.
 - Valeur : maintien opérationnel même en conditions dégradées.
 
-## 5. Intelligence Artificielle embarquée – Mise à jour
+## Intelligence Artificielle embarquée – Mise à jour
 
 ### SignalClassifier (services/SignalClassifier.kt)
 - Fonction : identifier automatiquement les modulations radio (FM, AM, DMR, etc.).
@@ -129,7 +97,7 @@ Flux opérationnel :
 - **Auditabilité** : chaque détection est enregistrée et vérifiable.
 - **Interopérabilité** : résultats intégrés dans MeshSyncEngine pour diffusion immédiate.
 
-## 6. Formation et Certification – Mise à jour
+## Formation et Certification – Mise à jour
 
 ### Documentation institutionnelle
 - docs/ : contient les SOP (Standard Operating Procedures), manuels opérateurs, et guides de formation.
@@ -157,7 +125,7 @@ Flux opérationnel :
 - Certification institutionnelle facilitée par documentation complète et auditable.
 - Transmission et adoption au-delà du cadre national (continentalisation).
 
-## 7. SensitiveStore.kt – Internal DoS
+## SensitiveStore.kt – Internal DoS
 
 ### Objectif
 Garantir la non-récupération absolue des données sensibles en cas de compromission.
@@ -187,7 +155,7 @@ Si l’effacement classique échoue (fichiers verrouillés, erreurs I/O), le sys
 - Priorité maximale : les threads de sécurité passent avant toute tentative d’accès externe.
 - Effet dissuasif : l’appareil devient une “brique” inutilisable, empêchant toute exploitation.
 
-## 8. GeofenceManager – Sécurité géographique
+## GeofenceManager – Sécurité géographique
 
 ### Objectif
 Empêcher l’utilisation du système SIGINT en dehors d’une zone de mission autorisée.
@@ -218,7 +186,7 @@ fun main() {
     println("Position Sake : ${if (inSake) "AUTORISÉE" else "ALERTE WIPE"}")
 }
 
-## 9. MissionLogger.kt – Evidence Mode
+## MissionLogger.kt – Evidence Mode
 
 ### Objectif
 Garantir l’intégrité et la non-falsification des journaux de mission.
@@ -245,7 +213,7 @@ MissionLogger.critical("WIPE_TRIGGERED: sortie de zone Goma")
 val integrityOk = MissionLogger.verifyIntegrity()
 println("Intégrité du journal : ${if (integrityOk) "OK" else "COMPROMIS"}")
 
-## 10. WifiDirectAdapter.kt – Communication Mesh
+## WifiDirectAdapter.kt – Communication Mesh
 
 ### Objectif
 Permettre aux unités SIGINT de communiquer directement entre elles, sans dépendre d’infrastructures civiles (antennes relais, routeurs).
@@ -280,7 +248,7 @@ Le Wi-Fi Direct (P2P) crée un réseau maillé autonome, idéal pour les opérat
 - Réception : configurer receive(handler) pour traiter les alertes en temps réel.
 - Arrêt : exécuter stop() en fin de mission ou lors d’un wipe.
 
-## 11. SignalClassifier.kt – IA embarquée
+## SignalClassifier.kt – IA embarquée
 
 ### Objectif
 Donner une intelligence embarquée au système : transformer les ondes radio interceptées en informations exploitables.
@@ -313,7 +281,7 @@ Le module SignalClassifier utilise TensorFlow Lite pour classifier automatiqueme
 - Auditabilité : chaque détection est enregistrée et vérifiable.
 - Interopérabilité : résultats intégrés dans MeshSyncEngine pour diffusion immédiate.
 
-## 12. Modes opérationnels – SIGINT Combat-Ready
+## Modes opérationnels – SIGINT Combat-Ready
 
 Ce chapitre regroupe tous les profils de mission disponibles dans le système SIGINT combat-ready.
 Chaque mode est conçu pour répondre à un contexte opérationnel spécifique et active/désactive des modules précis.
