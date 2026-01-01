@@ -91,5 +91,19 @@ L'ajout de ce module change radicalement la posture de l'unité SIGINT :
  * Preuve Numérique : Chaque anomalie détectée est hachée et stockée de manière inaltérable, ce qui est crucial pour les rapports de mission après engagement.
  * Furtivité : En identifiant les tentatives de brouillage (Jamming), le système permet à l'unité de changer de fréquence ou de position avant la perte totale du lien BFT.
 
+## 🛰️ 9. Fallback Mode & Résilience (P2P)
+
+Le système garantit la continuité de mission même en cas de perte totale des infrastructures (Brouillage, destruction d'antennes).
+
+### 🔗 A. MeshSyncEngine (Réseau Maillé)
+- **Fonction** : Crée un réseau autonome entre les unités via Wi-Fi Direct.
+- **Usage** : Partage automatique des cibles BFT et des alertes d'anomalies IA sans dépendre d'Internet.
+
+### 📡 B. FallbackTransmitter (Canaux Dégradés)
+- **Fonction** : Utilise des protocoles SMS chiffrés ou HF analogique pour les données critiques.
+- **SOP associée** : Se référer à `docs/SOP/transmission_SOP.md` pour les fréquences de secours.
+
+### ⚔️ C. Valeur Stratégique
+En mode **ENGAGED**, si le lien principal vers l'État-Major tombe, le `FallbackTransmitter` prend le relais automatiquement pour exfiltrer les preuves du `SecurityVault`.
 
 
