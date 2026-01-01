@@ -9,11 +9,10 @@ import java.io.File
 import java.time.Instant
 
 fun main(args: Array<String>) {
-    println("✅ SOVEREIGN CORE v2.4.0 (ULTIMATE-INTEGRATION) boot OK")
+    println("✅ SOVEREIGN CORE v2.4.0 (EXECUTIVE-DEPLOYMENT) boot OK")
 
     val app = Javalin.create { config ->
-        // --- EXPOSITION DES RÉPERTOIRES TACTIQUES (STATIQUES) ---
-        // Permet d'accéder aux interfaces et ressources de chaque module
+        // --- LIAISONS OPÉRATIONNELLES (VISIBLES VIA NAVIGATEUR) ---
         config.staticFiles.add("./ui", Location.EXTERNAL)
         config.staticFiles.add("./Sovereign-Offensive", Location.EXTERNAL)
         config.staticFiles.add("./bft", Location.EXTERNAL)
@@ -22,48 +21,28 @@ fun main(args: Array<String>) {
         config.staticFiles.add("./services", Location.EXTERNAL)
         config.staticFiles.add("./data", Location.EXTERNAL)
         config.staticFiles.add("./reports", Location.EXTERNAL)
-        config.staticFiles.add("./src/main/kotlin/com/fardc/sigint/core", Location.EXTERNAL) // Liaison Core
-
+        
+        // --- LIAISONS DOCUMENTATION & SPECS ---
+        config.staticFiles.add("./docs", Location.EXTERNAL)
+        config.staticFiles.add("./specs", Location.EXTERNAL)
+        config.staticFiles.add("./scripts", Location.EXTERNAL) // Pour monitoring scripts
+        
         config.showJavalinBanner = false
     }.start(7070)
 
-    // Redirection racine vers l'interface principale
+    // Entrée Tactique
     app.get("/") { ctx -> ctx.redirect("/tactical/index.html") }
 
-    // --- API DE GESTION DU CYCLE D'INTELLIGENCE ---
-
-    // Rapport d'état global (Fusion des dossiers)
-    app.get("/api/system/full-status") { ctx ->
-        ctx.json(mapOf(
-            "timestamp" to Instant.now().toString(),
-            "modules" to listOf("OFFENSIVE", "BFT", "SIGINT", "INFRA", "SERVICES"),
-            "storage" to mapOf(
-                "data_samples" to (File("./data").listFiles()?.size ?: 0),
-                "active_reports" to (File("./reports").listFiles()?.size ?: 0)
-            ),
-            "core_engine" to "VERIFIED"
-        ))
+    // API de consultation de la documentation pour le Dashboard
+    app.get("/api/docs/sitrep") { ctx ->
+        val sitrep = File("docs/SITREP_GENERAL.md")
+        if (sitrep.exists()) ctx.result(sitrep.readText()) else ctx.status(404)
     }
 
-    // Listing des rapports pour le Général
-    app.get("/api/reports") { ctx ->
-        val files = File("./reports").listFiles()?.map { it.name } ?: listOf()
-        ctx.json(files)
-    }
-
-    // --- INITIALISATION DES COMPOSANTS CORE ---
+    // Moteurs Core (IA & MESH)
     val vault = SecurityVault()
     val combatHandler = CombatModeHandler()
-    val meshEngine = MeshSyncEngine(vault, combatHandler)
-    val aiEngine = SignalClassifier(vault, combatHandler)
-
-    // Setup des routes spécifiques aux services
-    meshEngine.setup(app)
+    MeshSyncEngine(vault, combatHandler).setup(app)
     combatHandler.setupRoutes(app)
-    
-    // Endpoint IA pour la classification de signaux
-    app.post("/api/ai/classify") { ctx ->
-        ctx.json(aiEngine.processInference(ctx.bodyAsBytes()))
-    }
 }
 EOF
