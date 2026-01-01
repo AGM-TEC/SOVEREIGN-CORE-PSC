@@ -134,11 +134,11 @@ L'interface de commandement est accessible via tout navigateur sur le réseau s�
  * Mesh Resilience : Le système peut fonctionner en mode dégradé sans internet, via le protocole Mesh de synchronisation.
  * Neutralisation : En cas de capture, l'arrêt du processus Java verrouille instantanément l'accès aux clés de déchiffrement.
  
-> 5. SYSTÈME DE GESTION DE FICHIERS ET FLUX (WORKFLOW)
-> Le SOVEREIGN CORE v2.4.0 centralise désormais l'intégralité du cycle de l'information :
->  * Ingestion (data/) : Stockage des signaux bruts et captures d'intelligence.
->  * Traitement (core/ & services/) : Algorithmes de décision et logique métier sécurisée.
->  * Action (Sovereign-Offensive/ & bft/) : Modules d'intervention cyber et de suivi des forces.
->  * Restitution (reports/) : Archivage des preuves et des synthèses tactiques.
->  * Maintenance (infra/) : Monitoring des ressources du terminal et du réseau Mesh.
-> 
+## 5. SYSTÈME DE GESTION DE FICHIERS ET FLUX (WORKFLOW)
+Le SOVEREIGN CORE v2.4.0 centralise désormais l'intégralité du cycle de l'information :
+* Ingestion (data/) : Stockage des signaux bruts et captures d'intelligence.
+* Traitement (core/ & services/) : Algorithmes de décision et logique métier sécurisée.
+* Action (Sovereign-Offensive/ & bft/) : Modules d'intervention cyber et de suivi des forces.
+* Restitution (reports/) : Archivage des preuves et des synthèses tactiques.
+* Maintenance (infra/) : Monitoring des ressources du terminal et du réseau Mesh.
+
