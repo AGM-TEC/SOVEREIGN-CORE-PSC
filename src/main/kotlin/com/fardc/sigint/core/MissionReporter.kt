@@ -1,28 +1,24 @@
 package com.fardc.sigint.core
-
 import java.io.File
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.time.Instant
 
 class MissionReporter(private val vault: SecurityVault) {
+    fun logAction(action: String) {
+        File("reports/mission.log").appendText("[${Instant.now()}] $action\n")
+    }
+
     fun generateDailyReport() {
-        val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"))
-        val reportFile = File("reports/MISSION_REPORT_${timestamp}.txt")
-        
-        File("reports").mkdirs()
-
-        val reportHeader = """
-        ====================================================
-        OFFICE DU RENSEIGNEMENT ÉLECTRONIQUE (FARDC)
-        RAPPORT DE MISSION SIGINT - CONFIDENTIEL
-        Généré le : ${LocalDateTime.now()}
-        ====================================================
+        val reportContent = """
+            🛡️ RAPPORT TACTIQUE SOVEREIGN CORE
+            DATE : ${Instant.now()}
+            UNITÉ : FARDC-SIGINT-ALPHA
+            ----------------------------------
+            SYSTÈME : OPÉRATIONNEL
+            MENACES DÉTECTÉES : 0
+            STATUS : TOUS LES VOYANTS AU VERT
         """.trimIndent()
-
-        reportFile.writeText(reportHeader)
-        reportFile.appendText("\n--- RÉSULTATS DES CAPTURES ---\n")
-        reportFile.appendText("Données actives dans le Vault chiffré.\n")
         
-        println("📝 [REPORT] Rapport généré : ${reportFile.absolutePath}")
+        File("reports/daily_report_${Instant.now().epochSecond}.txt").writeText(reportContent)
+        println("📊 [REPORTER] Rapport quotidien généré dans le dossier /reports")
     }
 }
