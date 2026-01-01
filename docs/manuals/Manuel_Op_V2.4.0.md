@@ -59,3 +59,37 @@ Pour garantir la conformité aux Règles d'Engagement (ROE), chaque module intè
  * Reporting Cohérent : Le MissionReporter peut désormais justifier pourquoi une capture n'a pas eu lieu (mode inadéquat), ce qui est essentiel pour le débriefing.
  * Survie du Système : En mode STBY, vos endpoints ne répondent pas, rendant la détection de votre serveur par des scanners de vulnérabilité ennemis beaucoup plus difficile.
 
+## 🤖 7. Intelligence Artificielle et Inférence DSP
+
+Le système intègre désormais un moteur d'IA embarqué (`SignalClassifier`) et un module de détection proactive (`AnomalyDetector`) pour automatiser l'analyse du spectre électromagnétique.
+
+### 🔍 A. SignalClassifier (Classification de Modulation)
+- **Fonction** : Identifie automatiquement le type de signal intercepté (DMR, FM, GSM, LTE).
+- **Activation** : Opérationnel dès le mode **RECO**.
+- **Usage Tactique** : Permet à l'opérateur de savoir instantanément si une transmission détectée est une radio militaire ou un flux de données civiles.
+
+### ⚠️ B. AnomalyDetector (Détection de Menaces)
+- **Fonction** : Compare les signaux entrants avec la base de données `data/fardc_threat_db.json`.
+- **Seuil d'Anomalie** : Fixé par défaut à **0.85**. Tout signal dépassant ce score de divergence est marqué comme suspect.
+- **Réaction Automatique** : 
+  * Enregistrement immédiat dans le **SecurityVault** (Evidence Mode).
+  * En mode **ENGAGED** : Déclenchement d'une alerte critique transmise via le MeshSyncEngine.
+
+### 📂 C. Gestion de la Menace (fardc_threat_db.json)
+Le système reconnaît nativement trois types de menaces critiques :
+1. **DMR_MIL** : Communications radio standards.
+2. **JAMMING_ATTACK** : Tentative de brouillage électronique (Niveau : CRITIQUE).
+3. **UNAUTHORIZED_GATEWAY** : Points d'accès financiers suspects pour le phishing Pago Móvil.
+
+## 🛠️ 8. Commandes Opérateurs IA
+- **Analyser un signal** : `POST /api/ai/classify` (Envoi du buffer brut).
+- **Vérifier l'état de l'IA** : `GET /status` (Vérifie si `ai_engine` est "READY").
+
+⚔️ Analyse Stratégique de l'AnomalyDetector
+L'ajout de ce module change radicalement la posture de l'unité SIGINT :
+ * Réduction de la Charge Cognitive : L'opérateur n'a plus besoin d'analyser manuellement chaque spectrogramme ; l'IA le fait en millisecondes.
+ * Preuve Numérique : Chaque anomalie détectée est hachée et stockée de manière inaltérable, ce qui est crucial pour les rapports de mission après engagement.
+ * Furtivité : En identifiant les tentatives de brouillage (Jamming), le système permet à l'unité de changer de fréquence ou de position avant la perte totale du lien BFT.
+
+
+
