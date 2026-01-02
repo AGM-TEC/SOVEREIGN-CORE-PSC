@@ -1,0 +1,4 @@
+$(cat docs/MANUAL_V4_1_GEO_FUSION.md)
+
+## ADDENDUM v4.2 - INTEL & MESH
+$(cat docs/MANUAL_V4_2_COMPLETE_TACTICAL.md)
