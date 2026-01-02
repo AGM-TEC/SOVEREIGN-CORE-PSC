@@ -1,36 +1,3 @@
-# --- SYSTÈME & OUTILS ---
-.gradle/
-build/
 bin/
-kotlinc/
-out/
-.sdkman/
-.idea/
-.vscode/
-*.iml
-
-# --- COMPILATION & TEMPORAIRES ---
-*.class
+libs/
 *.jar
-*.log
-*.tmp
-*.swp
-*.bak
-*.old
-*.trace
-*.dump
-
-# --- SÉCURITÉ (NE JAMAIS POUSSER LES CLÉS RÉELLES) ---
-# On ignore les clés à la racine, mais on autorisera un dossier 'vault' crypté plus tard
-*.pem
-*.key
-*.crt
-*.jks
-*.gpg
-*.asc
-
-# --- OS & DIVERS ---
-.DS_Store
-Thumbs.db
-.bash_history
-.python_history

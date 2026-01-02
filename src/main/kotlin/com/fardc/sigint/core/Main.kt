@@ -1,75 +1,91 @@
-cat << 'EOF' > src/main/kotlin/com/fardc/sigint/core/Main.kt
 package com.fardc.sigint.core
 
 import com.fardc.sigint.services.dsp.SignalClassifier 
 import com.fardc.sigint.core.sync.MeshSyncEngine
+import com.fardc.sigint.core.network.SdrBridge
+import com.fardc.sigint.core.network.SignalStreamer
+import com.fardc.sigint.core.hardware.SovereignHardware
 import io.javalin.Javalin
 import io.javalin.http.staticfiles.Location
 import java.io.File
 import java.time.Instant
+import kotlin.concurrent.thread
 
 fun main(args: Array<String>) {
-    println("✅ SOVEREIGN CORE v2.4.0 (FULL-SPECTRUM-COMMAND) boot OK")
+    println("✅ SOVEREIGN CORE v4.0 (BATTLE-LINK) boot OK")
+
+    // --- 0. INITIALISATION DES COMPOSANTS RADIO & STREAMING ---
+    val sdrBridge = SdrBridge("127.0.0.1", 14423)
+    val sdrHardware = try { SovereignHardware() } catch(e: Exception) { null }
+    val signalStreamer = SignalStreamer()
 
     val app = Javalin.create { config ->
         // --- 1. LIAISONS INTERFACES & ASSETS ---
         config.staticFiles.add("./ui", Location.EXTERNAL)
-        
-        // --- 2. LIAISONS OPÉRATIONNELLES (OFFENSIF & TACTIQUE) ---
         config.staticFiles.add("./Sovereign-Offensive", Location.EXTERNAL)
         config.staticFiles.add("./bft", Location.EXTERNAL)
         config.staticFiles.add("./sigint", Location.EXTERNAL)
-        
-        // --- 3. LIAISONS DONNÉES & RAPPORTS ---
+
+        // --- 2. LIAISONS DONNÉES & RAPPORTS ---
         config.staticFiles.add("./data", Location.EXTERNAL)
         config.staticFiles.add("./reports", Location.EXTERNAL)
-        
-        // --- 4. LIAISONS INFRASTRUCTURE & SERVICES ---
+
+        // --- 3. LIAISONS INFRASTRUCTURE & SERVICES ---
         config.staticFiles.add("./infra", Location.EXTERNAL)
         config.staticFiles.add("./services", Location.EXTERNAL)
         config.staticFiles.add("./scripts", Location.EXTERNAL)
-        
-        // --- 5. LIAISONS DOCUMENTATION & INGÉNIERIE ---
         config.staticFiles.add("./docs", Location.EXTERNAL)
         config.staticFiles.add("./specs", Location.EXTERNAL)
-        config.staticFiles.add("./src/main/kotlin/com/fardc/sigint/core", Location.EXTERNAL)
-        
+
         config.showJavalinBanner = false
     }.start(7070)
 
-    // Redirection vers l'interface tactique par défaut
-    app.get("/") { ctx -> ctx.redirect("/tactical/index.html") }
+    // --- 4. ACTIVATION DU FLUX HUD (WEBSOCKET) ---
+    signalStreamer.setup(app)
 
-    // --- API UNIFIÉE POUR LE DASHBOARD DU GÉNÉRAL ---
+    // --- 5. ROUTAGE TACTIQUE & API C2 ---
+    app.get("/") { ctx -> ctx.redirect("/tactical/index.html") }
 
     app.get("/api/system/summary") { ctx ->
         ctx.json(mapOf(
             "status" to "BATTLE_READY",
             "uptime" to Instant.now().toString(),
-            "active_modules" to listOf("SIGINT", "BFT", "OFFENSIVE", "MESH"),
-            "security_level" to "AES-256-ENFORCED",
-            "storage" to mapOf(
-                "intelligence_data" to (File("./data").listFiles()?.size ?: 0),
-                "tactical_reports" to (File("./reports").listFiles()?.size ?: 0)
-            )
+            "active_modules" to listOf("SIGINT", "BFT", "OFFENSIVE", "MESH", "SDR_CORE"),
+            "hardware_native" to (sdrHardware != null),
+            "network_bridge" to sdrBridge.connect(),
+            "security_level" to "AES-256-ENFORCED"
         ))
     }
 
-    // Endpoint spécifique pour le déploiement offensif
     app.post("/api/offensive/deploy") { ctx ->
         val payload = ctx.queryParam("payload") ?: "GENERIC_JAMMER"
-        println("🔥 ALERTE : Déploiement du module offensif : $payload")
-        ctx.json(mapOf("action" to "DEPLOYED", "module" to payload, "timestamp" to Instant.now().toString()))
+        val freq = ctx.queryParam("freq")?.toLong() ?: 91800000L
+        println("🔥 [WARFARE] Déploiement $payload sur ${freq/1000000.0} MHz")
+        
+        sdrHardware?.setFrequency(freq) // Pilotage physique direct
+        ctx.json(mapOf("action" to "DEPLOYED", "target_freq" to freq))
     }
 
-    // --- INITIALISATION DES COMPOSANTS CORE ---
+    // --- 6. INITIALISATION CORE SERVICES ---
     val vault = SecurityVault()
     val combatHandler = CombatModeHandler()
     val meshEngine = MeshSyncEngine(vault, combatHandler)
     val aiEngine = SignalClassifier(vault, combatHandler)
 
-    // Activation des services Mesh et Combat
     meshEngine.setup(app)
     combatHandler.setupRoutes(app)
+
+    // --- 7. BOUCLE DE CAPTURE ET DIFFUSION HUD ---
+    thread(start = true, isDaemon = true) {
+        println("📡 [SCANNER] Démarrage du flux de données SDR...")
+        while (true) {
+            val rawData = sdrBridge.receiveSignal()
+            if (rawData.isNotEmpty()) {
+                val dbm = rawData.map { it.toInt() }.average()
+                // Envoi des données vers l'oscilloscope JS
+                signalStreamer.broadcastSpectrumData("""{"power": $dbm, "freq": 91800000}""")
+            }
+            Thread.sleep(100)
+        }
+    }
 }
-EOF

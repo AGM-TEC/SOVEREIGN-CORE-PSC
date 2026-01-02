@@ -1,0 +1,11 @@
+📜 CERTIFICAT D'AUTHENTICITÉ SOVEREIGN CORE
+-------------------------------------------
+ID VERSION : v3.0-FINAL (Ultimate Combat)
+DATE       : 01/01/2026
+UNITÉ      : FARDC-SIGINT-ALPHA
+CLASSIF.   : TOP-SECRET / SOUVERAIN
+-------------------------------------------
+SIGNATURE D'INTÉGRITÉ (SHA-256) :
+efff8aa2e32d58ec41c4e826b0853317e8cabcb4f0b771892e8fd0d926063b24  SovereignCore_v3.0_FARDC.zip
+-------------------------------------------
+SYSTÈME VALIDÉ ET PRÊT POUR LE SERVICE ACTIF.

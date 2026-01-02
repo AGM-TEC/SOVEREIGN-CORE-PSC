@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>SOVEREIGN HUD v4.5 - COMMAND</title>
+    <style>
+        body { background: #050505; color: #00ff41; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        #header { background: #001100; padding: 10px; border-bottom: 2px solid #00ff41; display: flex; justify-content: space-between; align-items: center; }
+        #mode-selector { background: #111; padding: 10px; display: flex; gap: 15px; border-bottom: 1px solid #004400; justify-content: center; }
+        button { padding: 8px 15px; cursor: pointer; font-weight: bold; font-family: 'Courier New'; border-radius: 3px; }
+        .btn-silent { background: #002200; color: #00ff00; border: 1px solid #00ff00; }
+        .btn-auto { background: #221100; color: #ffaa00; border: 1px solid #ffaa00; }
+        .btn-assault { background: #220000; color: #ff0000; border: 1px solid #ff0000; }
+        canvas { width: 100vw; height: 50vh; background: #000; border-bottom: 1px solid #004400; }
+        #console { height: 35vh; overflow-y: scroll; padding: 10px; font-size: 12px; color: #008f11; background: rgba(0,10,0,0.9); }
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <span>[ SOVEREIGN CORE v4.5 ]</span>
+        <span id="status" class="blink">LIAISON EN COURS...</span>
+        <span>UNITÉ SIGINT - FARDC</span>
+    </div>
+
+    <div id="mode-selector">
+        <button class="btn-silent" onclick="setCombatMode('SILENT')">🟢 SILENT WATCH</button>
+        <button class="btn-auto" onclick="setCombatMode('AUTO')">🟠 AUTO DEFENSE</button>
+        <button class="btn-assault" onclick="setCombatMode('ASSAULT')">🔴 ELECTRONIC ASSAULT</button>
+    </div>
+    
+    <canvas id="waterfall"></canvas>
+    <div id="console"></div>
+
+    <script>
+        const canvas = document.getElementById('waterfall');
+        const ctx = canvas.getContext('2d');
+        const status = document.getElementById('status');
+        const consoleLog = document.getElementById('console');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight * 0.5;
+
+        // Connexion WebSocket pour le flux radio
+        const ws = new WebSocket('ws://' + location.host + '/api/signals/live');
+
+        ws.onopen = () => {
+            status.innerHTML = "LIAISON ÉTABLIE";
+            status.classList.remove('blink');
+            status.style.color = "#00ff41";
+            log("SYSTÈME PRÊT : En attente d'ordres tactiques.");
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            renderSignal(data.power);
+        };
+
+        // Fonction pour changer le mode de combat via API
+        function setCombatMode(mode) {
+            log(`COMMANDE : Changement de posture vers [${mode}]...`);
+            fetch(`/api/combat/mode?type=${mode}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => log(`RÉPONSE CORE : ${data.current_mode}`))
+                .catch(err => log(`ERREUR CRITIQUE : Échec de liaison`));
+        }
+
+        function renderSignal(power) {
+            const x = Math.random() * canvas.width;
+            const h = Math.abs(power) * 3;
+            ctx.fillStyle = '#00ff41';
+            ctx.fillRect(x, canvas.height - h, 2, h);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function log(msg) {
+            const div = document.createElement('div');
+            div.innerHTML = `> [${new Date().toLocaleTimeString()}] ${msg}`;
+            consoleLog.prepend(div);
+        }
+    </script>
+</body>
+</html>
