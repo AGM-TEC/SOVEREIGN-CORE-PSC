@@ -1,0 +1,1 @@
+1482c7d67df398ee060661471007c27975fa248dae0dbc5c87b803a23ad134ca  bin/SovereignCore.jar
