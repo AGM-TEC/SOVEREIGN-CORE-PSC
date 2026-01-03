@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BFT - Blue Force Tracking</title>
+    <style>
+        body { background: #001100; color: #00ff00; font-family: monospace; }
+        .radar { width: 300px; height: 300px; border: 2px solid #00ff00; border-radius: 50%; position: relative; margin: 20px; }
+        .unit { position: absolute; width: 10px; height: 10px; background: cyan; border-radius: 50%; }
+        .unit-label { font-size: 10px; margin-top: 12px; }
+    </style>
+</head>
+<body>
+    <h2>📍 SUIVI DES UNITÉS ALLIÉES</h2>
+    <div id="radar" class="radar"></div>
+    <div id="logs"></div>
+
+    <script>
+        function updateBFT() {
+            // Simulation de réception des données BFT
+            const radar = document.getElementById('radar');
+            radar.innerHTML = ''; 
+            const unit = document.createElement('div');
+            unit.className = 'unit';
+            unit.style.left = '140px'; unit.style.top = '100px';
+            unit.innerHTML = '<div class="unit-label">ALPHA-01</div>';
+            radar.appendChild(unit);
+        }
+        setInterval(updateBFT, 3000);
+    </script>
+</body>
+</html>

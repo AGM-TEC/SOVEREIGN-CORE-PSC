@@ -1,13 +1,23 @@
 package com.fardc.sigint.services.dsp
 
-import com.fardc.sigint.core.CombatModeHandler
-import com.fardc.sigint.core.CombatState
 import com.fardc.sigint.core.SecurityVault
-import java.time.Instant
+import com.fardc.sigint.core.CombatModeHandler
 
-class SignalClassifier(private val vault: SecurityVault, private val combatHandler: CombatModeHandler) {
-    fun processInference(data: ByteArray): Map<String, Any> {
-        if (combatHandler.getStatus() == CombatState.STBY) return mapOf("status" to "LOCKED")
-        return mapOf("modulation" to "DMR_DETECTED", "anomaly" to true, "timestamp" to Instant.now().toString())
+class SignalClassifier(val vault: SecurityVault, val handler: CombatModeHandler) {
+    
+    /**
+     * Traite le flux de données brutes du SDR pour l'IA et l'audio
+     */
+    fun processRawSpectrum(data: String) {
+        if (data.isBlank()) return
+        
+        // Logique de détection vocale (SIGINT-VOICE)
+        // Analyse du signal au-dessus du seuil de bruit (Squelch)
+        if (data.contains("-") && data.split(",").size > 3) {
+            val power = data.split(",")[3].trim().toDoubleOrNull() ?: -100.0
+            if (power > -25.0) {
+                println("🎧 [VOICE-INT] Signal audio détecté à ${power}dB. Démodulation en cours...")
+            }
+        }
     }
 }

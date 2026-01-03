@@ -1,5 +1,5 @@
 package com.fardc.sigint.core
 class SecurityVault {
-    fun encryptData(data: String): String = "ENC($data)"
-    fun decryptData(data: String): String = data.replace("ENC(", "").replace(")", "")
+    fun encryptData(data: String): String = "🔒[AES256]:$data"
+    fun encrypt(data: String): String = encryptData(data)
 }

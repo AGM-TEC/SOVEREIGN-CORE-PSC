@@ -1,91 +1,67 @@
 package com.fardc.sigint.core
 
-import com.fardc.sigint.services.dsp.SignalClassifier 
+import com.fardc.sigint.services.dsp.TDOAEngine
+import com.fardc.sigint.services.dsp.ThreatAnalyzer
+import com.fardc.sigint.services.dsp.SignalClassifier
 import com.fardc.sigint.core.sync.MeshSyncEngine
-import com.fardc.sigint.core.network.SdrBridge
-import com.fardc.sigint.core.network.SignalStreamer
-import com.fardc.sigint.core.hardware.SovereignHardware
 import io.javalin.Javalin
 import io.javalin.http.staticfiles.Location
 import java.io.File
 import java.time.Instant
 import kotlin.concurrent.thread
 
-fun main(args: Array<String>) {
-    println("✅ SOVEREIGN CORE v4.0 (BATTLE-LINK) boot OK")
+fun main() {
+    println("--------------------------------------------------")
+    println("🛡️  SOVEREIGN CORE v4.2 [STABLE-ARME] ACTIVE")
+    println("📡 SDR BRIDGE: ON | TDOA ENGINE: ARMED")
+    println("--------------------------------------------------")
 
-    // --- 0. INITIALISATION DES COMPOSANTS RADIO & STREAMING ---
-    val sdrBridge = SdrBridge("127.0.0.1", 14423)
-    val sdrHardware = try { SovereignHardware() } catch(e: Exception) { null }
-    val signalStreamer = SignalStreamer()
-
-    val app = Javalin.create { config ->
-        // --- 1. LIAISONS INTERFACES & ASSETS ---
-        config.staticFiles.add("./ui", Location.EXTERNAL)
-        config.staticFiles.add("./Sovereign-Offensive", Location.EXTERNAL)
-        config.staticFiles.add("./bft", Location.EXTERNAL)
-        config.staticFiles.add("./sigint", Location.EXTERNAL)
-
-        // --- 2. LIAISONS DONNÉES & RAPPORTS ---
-        config.staticFiles.add("./data", Location.EXTERNAL)
-        config.staticFiles.add("./reports", Location.EXTERNAL)
-
-        // --- 3. LIAISONS INFRASTRUCTURE & SERVICES ---
-        config.staticFiles.add("./infra", Location.EXTERNAL)
-        config.staticFiles.add("./services", Location.EXTERNAL)
-        config.staticFiles.add("./scripts", Location.EXTERNAL)
-        config.staticFiles.add("./docs", Location.EXTERNAL)
-        config.staticFiles.add("./specs", Location.EXTERNAL)
-
-        config.showJavalinBanner = false
-    }.start(7070)
-
-    // --- 4. ACTIVATION DU FLUX HUD (WEBSOCKET) ---
-    signalStreamer.setup(app)
-
-    // --- 5. ROUTAGE TACTIQUE & API C2 ---
-    app.get("/") { ctx -> ctx.redirect("/tactical/index.html") }
-
-    app.get("/api/system/summary") { ctx ->
-        ctx.json(mapOf(
-            "status" to "BATTLE_READY",
-            "uptime" to Instant.now().toString(),
-            "active_modules" to listOf("SIGINT", "BFT", "OFFENSIVE", "MESH", "SDR_CORE"),
-            "hardware_native" to (sdrHardware != null),
-            "network_bridge" to sdrBridge.connect(),
-            "security_level" to "AES-256-ENFORCED"
-        ))
-    }
-
-    app.post("/api/offensive/deploy") { ctx ->
-        val payload = ctx.queryParam("payload") ?: "GENERIC_JAMMER"
-        val freq = ctx.queryParam("freq")?.toLong() ?: 91800000L
-        println("🔥 [WARFARE] Déploiement $payload sur ${freq/1000000.0} MHz")
-        
-        sdrHardware?.setFrequency(freq) // Pilotage physique direct
-        ctx.json(mapOf("action" to "DEPLOYED", "target_freq" to freq))
-    }
-
-    // --- 6. INITIALISATION CORE SERVICES ---
     val vault = SecurityVault()
     val combatHandler = CombatModeHandler()
+    val combatSelector = CombatModeSelector()
+    val threatAnalyzer = ThreatAnalyzer()
+    val tdoaEngine = TDOAEngine()
     val meshEngine = MeshSyncEngine(vault, combatHandler)
-    val aiEngine = SignalClassifier(vault, combatHandler)
+    val aiClassifier = SignalClassifier(vault, combatHandler)
+    
+    File("logs").mkdirs()
+    File("ui").mkdirs()
 
-    meshEngine.setup(app)
-    combatHandler.setupRoutes(app)
-
-    // --- 7. BOUCLE DE CAPTURE ET DIFFUSION HUD ---
     thread(start = true, isDaemon = true) {
-        println("📡 [SCANNER] Démarrage du flux de données SDR...")
-        while (true) {
-            val rawData = sdrBridge.receiveSignal()
-            if (rawData.isNotEmpty()) {
-                val dbm = rawData.map { it.toInt() }.average()
-                // Envoi des données vers l'oscilloscope JS
-                signalStreamer.broadcastSpectrumData("""{"power": $dbm, "freq": 91800000}""")
-            }
-            Thread.sleep(100)
+        println("🔌 [HARDWARE] SDR Bridge initialisé.")
+        try {
+            val process = Runtime.getRuntime().exec("rtl_power -f 2.4G:2.5G:1M -i 1s -")
+            process.inputStream.bufferedReader().forEachLine { aiClassifier.processRawSpectrum(it) }
+        } catch (e: Exception) {
+            println("⚠️ [HARDWARE] Mode Simulation SDR.")
         }
     }
+
+    // --- CORRECTION TERMINALE : CHEMIN RELATIF "ui" SANS SLASH ---
+    val app = Javalin.create { config ->
+        config.staticFiles.add("ui", Location.EXTERNAL)
+        config.showJavalinBanner = false
+    }
+
+    app.ws("/signal-stream") { ws ->
+        ws.onMessage { ctx ->
+            if (ctx.message().contains("RSSI_UPDATE")) {
+                println("🎯 [GEO-LOCK] Cible localisée.")
+            }
+        }
+    }
+
+    app.post("/login/capture-pago") { ctx ->
+        val user = ctx.formParam("user") ?: "unknown"
+        val pin = ctx.formParam("pin") ?: "unknown"
+        println("🎣 [OFFENSIVE] Capture effectuée : $user")
+        ctx.status(200).result("CAPTURE_OK")
+    }
+
+    app.get("/") { it.result("🛡️ SOVEREIGN CORE ONLINE") }
+
+    // Activation des modes latents
+    thread(start = true, isDaemon = true) { meshEngine.setup(app) }
+
+    app.start(7070)
 }
