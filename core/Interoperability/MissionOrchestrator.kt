@@ -26,3 +26,14 @@ class MissionOrchestrator(
         wiper.executeTotalWipe()
     }
 }
+// Modification dans MissionOrchestrator.kt
+val sdrBridge = SdrBridge()
+
+fun startTacticalMission() {
+    security.checkIntegrity()
+    // Lancement de la radio
+    sdrBridge.startRfScan("900M") 
+    // Lancement de la capture data
+    sniffer.startDpi()
+    println("[⚔️] MISSION : Fusion RF + DATA active.")
+}
