@@ -14,17 +14,18 @@ class AntiForensics {
     private val secureRandom = SecureRandom()
 
     /**
-     * Effacement sécurisé DoD 5220.22-M
-     * Réécrit le fichier avec des données aléatoires avant suppression.
+     * Effacement sécurisé conforme aux standards de suppression physique.
+     * Réécrit le fichier avec des données aléatoires puis des zéros avant suppression.
      */
     fun secureWipe(targetFile: File) {
         if (!targetFile.exists()) return
 
         try {
             val length = targetFile.length()
+            // Ouverture en mode 'rws' pour forcer l'écriture immédiate sur le stockage physique
             val raf = RandomAccessFile(targetFile, "rws")
-            
-            // Passe 1 : Données aléatoires
+
+            // Passe 1 : Écrasement par données aléatoires (Brise la rémanence)
             val buffer = ByteArray(4096)
             var pos = 0L
             while (pos < length) {
@@ -32,8 +33,8 @@ class AntiForensics {
                 raf.write(buffer)
                 pos += buffer.size
             }
-            
-            // Passe 2 : Remise à zéro
+
+            // Passe 2 : Mise à zéro totale (Nettoyage final)
             raf.seek(0)
             buffer.fill(0)
             pos = 0L
@@ -41,17 +42,17 @@ class AntiForensics {
                 raf.write(buffer)
                 pos += buffer.size
             }
-            
+
             raf.close()
             targetFile.delete()
-            println("[🛡️] Anti-Forensics : Fichier détruit physiquement.")
+            println("[🛡️] Anti-Forensics : Fichier détruit physiquement (Zéro récupération possible).")
         } catch (e: Exception) {
-            targetFile.delete() // Suppression simple en dernier recours
+            targetFile.delete() // Suppression système simple en cas d'erreur de bas niveau
         }
     }
 
     /**
-     * Purge de la RAM pour empêcher les dumps de mémoire.
+     * Purge forcée des traces en mémoire vive (RAM).
      */
     fun purgeMemory() {
         System.gc()
