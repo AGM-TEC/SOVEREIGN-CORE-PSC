@@ -1,0 +1,2 @@
+TAG: v7.1.0-GOLD-FARDC-SIGINT
+TITRE: SOVEREIGN-CORE - Système Intégré de Souveraineté Numérique

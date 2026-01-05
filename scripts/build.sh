@@ -1,4 +1,3 @@
-cat << 'EOF' > scripts/build.sh
 #!/bin/bash
 # SOVEREIGN-CORE-PSC | Professional Build System
 # Version: 2.3.0
@@ -27,5 +26,3 @@ else
     echo -e "${RED}❌ ÉCHEC DU BUILD. Vérifiez les erreurs ci-dessus.${NC}"
     exit 1
 fi
-EOF
-chmod +x scripts/build.sh

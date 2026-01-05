@@ -1,0 +1,7 @@
+📌 TITRE : SOVEREIGN-CORE v7.1-GOLD
+🏷️ TAG : v7.1.0-GOLD
+📜 CERTIFICAT : FARDC-EW-2026-ALPHA-01
+📝 NOTES : 
+- Suppression intégrale des pièges v4/v5.
+- Intégration complète SIGINT/EW.
+- Réseau Mesh Tactique actif.

@@ -1,8 +1,7 @@
 package com.fardc.sigint.core
-enum class CombatState { STBY, ACTIVE, ENGAGED }
-class CombatModeHandler {
-    fun getStatus(): CombatState = CombatState.ACTIVE
-    fun isBFTOperational(): Boolean = true
-    fun isFinancialOffenseAllowed(): Boolean = true
-    fun isPassiveInterceptionEnabled(): Boolean = true
+class CombatModeHandler : CombatModeHandlerInterface {
+    override fun getStatus(): CombatState = CombatState.OP
+    override fun isBFTOperational(): Boolean = true
+    override fun isFinancialOffenseAllowed(): Boolean = true
+    override fun isPassiveInterceptionEnabled(): Boolean = true
 }

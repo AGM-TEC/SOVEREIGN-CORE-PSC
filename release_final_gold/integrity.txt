@@ -1,0 +1,1 @@
+6e7376046efaf9eb05501c88fa42fd9cfed17f1fd102bb0a27dfa320bdcd76ac  release_final_gold/SOVEREIGN-V7-GOLD.jar
