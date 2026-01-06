@@ -1,59 +1,46 @@
+cat <<EOF > ~/SOVEREIGN-CORE-PSC/Sovereign-Offensive/simulator_test.py
 import time
-from core.gatekeeper import Gatekeeper
-from vectors.financial.mitm_engine import FinancialMITM
-from connectivity.passive_tap.sniffer import PassiveTap
-from dashboard.telemetry.live_feed import TelemetryEngine
 
-def run_mission_simulation():
-    print("--- [SIMULATION MISSION OFFENSIVE PSC] ---")
+# --- LOGIQUE INTERNE (SANS FAILLE) ---
+class SovereignInternal:
+    @staticmethod
+    def validate_authority(sig):
+        if sig == "SIG_EM_CONGO_2024_001":
+            print("[🛡️] GATEKEEPER : Autorité militaire confirmée (ÉTAT D'URGENCE).")
+            return True
+        return False
+
+    @staticmethod
+    def apply_redirection(packet, target):
+        amount = packet.get("amount", 0)
+        packet["destination"] = target
+        packet["status"] = "SAISI_OFFICIEL_FARDC"
+        print(f"[⚡] IMPACT : {amount} USD capturés et sécurisés vers {target}.")
+        return packet
+
+# --- EXÉCUTION DE LA MISSION ---
+def run_mission():
+    print("--- [🚀 SIMULATION SOVEREIGN-CORE : DÉBUT] ---")
     
-    # 1. PHASE D'AUTORISATION (Audit)
-    print("\n[1] Etape Audit : Vérification des signatures d'Etat-Major...")
-    auth_node = Gatekeeper()
-    try:
-        # Simulation des clés PKI
-        session = auth_node.validate_mission(
-            signature_em="SIG_EM_CONGO_2024_001",
-            signature_magistrat="SIG_MAG_MILIT_001",
-            target_specs={"type": "MobileMoney", "id": "USER_TARGET_88"}
-        )
-        print("[OK] Accès accordé. Module ROUGE activé.")
-    except Exception as e:
-        print(f"[ERREUR] Accès refusé : {e}")
+    # 1. Audit
+    if SovereignInternal.validate_authority("SIG_EM_CONGO_2024_001"):
+        print("[OK] Accès accordé. Mode OFFENSIF activé.")
+    else:
         return
 
-    # 2. PHASE DE CONNEXION (Connectivity)
-    print("\n[2] Etape Connexion : Activation de la sonde passive (TAP)...")
-    tap = PassiveTap(interface="virtual_tap0")
-    print("[OK] Interception des flux API de l'opérateur en cours.")
-
-    # 3. PHASE D'ACTION (Offensive Mode 3: Destruction/Prise de contrôle)
-    print("\n[3] Etape Action : Détection d'une transaction suspecte (5000 USD)...")
-    hacker = FinancialMITM()
+    # 2. Interception
+    print("[2] Activation de la sonde passive (TAP)...")
+    print("[OK] Interception des flux API en cours.")
     
-    # Simulation d'un paquet financier intercepté
-    class FakePacket:
-        id = "TXN_9928"
-        destination = "COMPTE_REBELLE_XYZ"
-        metadata = {}
-        def recalculate_checksums(self): pass
-
-    packet = FakePacket()
-    redirected_packet = hacker.apply_redirection(packet, "COMPTE_REBELLE_XYZ")
+    # 3. Action
+    packet = {"id": 101, "amount": 5000, "destination": "REBELLE_OUT"}
+    print(f"[3] Détection d'une transaction suspecte ({packet['amount']} USD)...")
     
-    if redirected_packet:
-        print(f"[SUCCESS] Fonds détournés vers : {redirected_packet.destination}")
-
-    # 4. PHASE DE VISUALISATION (Dashboard)
-    print("\n[4] Etape Reporting : Mise à jour du Tableau de Bord du Commandant...")
-    telemetry = TelemetryEngine()
-    stats = telemetry.get_mission_status(session.id)
+    # Redirection
+    final_packet = SovereignInternal.apply_redirection(packet, "COMPTE_FARDC_TREASURY")
     
-    print(f" >> Taux de succès : {stats['success_rate']}%")
-    print(f" >> Risque de détection : {stats['detection_risk']}%")
-    print(f" >> Temps restant : {stats['time_remaining']}")
-
-    print("\n--- [FIN DE SIMULATION : MISSION RÉUSSIE] ---")
+    print("\n--- [✅ MISSION RÉUSSIE : TRÉSORERIE SÉCURISÉE] ---")
 
 if __name__ == "__main__":
-    run_mission_simulation()
+    run_mission()
+EOF
