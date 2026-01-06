@@ -43,3 +43,24 @@ except KeyboardInterrupt:
     for proc in active_procs.values():
         proc.terminate()
 EOF
+cat <<EOF > core/Auto_Cleaner.py
+import os
+import time
+
+LOG_FILE = ".system_runtime.log"
+MAX_SIZE_MB = 5  # Limite de sécurité avant effacement
+
+def clean_logs():
+    if os.path.exists(LOG_FILE):
+        size = os.path.getsize(LOG_FILE) / (1024 * 1024)
+        if size > MAX_SIZE_MB:
+            with open(LOG_FILE, 'w') as f:
+                f.write("[🧹] NETTOYAGE AUTOMATIQUE EXECUTE - SECURITE PREVENTIVE\n")
+            print("[🛡️] LOGS PURGÉS POUR MAINTENIR LA FURTIVITÉ")
+
+if __name__ == "__main__":
+    while True:
+        clean_logs()
+        time.sleep(3600) # Vérification toutes les heures
+EOF
+
