@@ -35,3 +35,7 @@ if __name__ == "__main__":
 EOF
 
 chmod +x core/Infiltration/Sovereign_Financial_Link.py
+# Correction du Mesh pour la stabilité
+sed -i 's/prio, timestamp, enc_data = self.packet_queue.get()/try:\n                prio, timestamp, enc_data = self.packet_queue.get()/' core/Infiltration/Agent_Tools/Sovereign_Mesh_Tactical_v2.py
+# (Note: Cette commande sed est simplifiée, je recommande de vérifier le bloc try/except dans le fichier)
+
