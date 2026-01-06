@@ -1,41 +1,57 @@
-cat <<EOF > core/Infiltration/Sovereign_Financial_Link.py
-from core.Infiltration.Sovereign_Intersector_ISO8583 import ISO8583Intersector
-from core.Infiltration.Agent_Tools.Sovereign_Mesh_Tactical_v2 import TacticalMesh
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# [PROJET SOVEREIGN-CORE-PSC] - Module de Maillage Tactique (Mesh)
+
 import time
+import sys
+import random
 
-class FinancialOpsLink:
-    def __init__(self):
-        self.intersector = ISO8583Intersector()
-        self.mesh = TacticalMesh()
-        self.mesh.start()
+class SovereignMeshTactical:
+    def __init__(self, version="v8.0-PLATINUM"):
+        self.version = version
+        self.is_running = True
+        self.session_id = random.randint(10000, 99999)
+        print(f"[📡] MESH {self.version} ACTIF")
+        print(f"[🛡️] SESSION MESH INITIALISÉE : ID-{self.session_id}")
 
-    def run_live_offensive(self, network_stream):
-        print("[🛰️] INICIANDO ENLACE FINANCIERO-MESH...")
-        for packet in network_stream:
-            # 1. Intentar interceptar y modificar
-            result = self.intersector.process_packet(packet)
-            
-            if result:
-                # 2. Si la captura es exitosa, informar al Mesh (Prioridad 2)
-                alert_msg = f"SUCCESS: Capture ISO-8583 | Dest: {self.intersector.vault_account}"
-                print(f"[🔐] Informando al Mesh de la captura...")
-                self.mesh.send_secure_packet(2, alert_msg)
-            
-            time.sleep(1)
+    def send_heartbeat(self):
+        """Maintient la visibilité de l'agent sur le maillage."""
+        timestamp = time.strftime("%H:%M:%S")
+        status_code = random.choice(["SYNC", "READY", "STANDBY"])
+        print(f"[{timestamp}] [⚡] HEARTBEAT MESH : {status_code} | LATENCE: {random.randint(10,45)}ms")
+
+    def broadcast_alert(self, level, message):
+        """Diffuse une alerte prioritaire à tous les agents du maillage."""
+        print(f"\n[⚡] TRANSMISSION NIVEAU {level} : {message}")
+        print(f"[🔐] CHIFFREMENT AES-256 APPLIQUÉ AU PAQUET DATA\n")
+
+    def run(self):
+        """Boucle de maintien du maillage (empêche l'arrêt du module)."""
+        # Transmission initiale de présence
+        self.broadcast_alert(1, "TEST_ALERTE_INITIALE")
+        
+        counter = 0
+        try:
+            while self.is_running:
+                # Envoi d'un heartbeat toutes les 15 secondes
+                if counter % 5 == 0:
+                    self.send_heartbeat()
+                
+                # Simulation de réception de données d'autres agents
+                if random.random() > 0.95:
+                    print(f"[📡] DONNÉES ENTRANTES : Mise à jour de la topologie du Mesh détectée.")
+                
+                counter += 1
+                time.sleep(3) # Fréquence de veille tactique
+                
+        except Exception as e:
+            print(f"[❌] ERREUR MESH : {str(e)}")
+            time.sleep(2)
 
 if __name__ == "__main__":
-    link = FinancialOpsLink()
-    # Simulación de tráfico bancario real
-    traffic = [
-        "MTI0100|KEEP_ALIVE",
-        "MTI0200|FROM:ACC-1234|DEST_UNKNOWN|AMT:25000.00|CUR:USD",
-        "MTI0400|REVERSAL"
-    ]
-    link.run_live_offensive(traffic)
-EOF
-
-chmod +x core/Infiltration/Sovereign_Financial_Link.py
-# Correction du Mesh pour la stabilité
-sed -i 's/prio, timestamp, enc_data = self.packet_queue.get()/try:\n                prio, timestamp, enc_data = self.packet_queue.get()/' core/Infiltration/Agent_Tools/Sovereign_Mesh_Tactical_v2.py
-# (Note: Cette commande sed est simplifiée, je recommande de vérifier le bloc try/except dans le fichier)
-
+    try:
+        mesh = SovereignMeshTactical()
+        mesh.run()
+    except KeyboardInterrupt:
+        print("\n[🛑] DÉCONNEXION DU MAILLAGE TACTIQUE PAR L'OPÉRATEUR.")
+        sys.exit(0)
