@@ -4,6 +4,7 @@ import threading
 import time
 import hashlib
 import base64
+import os
 
 class RollingCipher:
     def __init__(self, master_key="FARDC_SOUVERAINETE_2026"):
@@ -35,23 +36,29 @@ class TacticalMesh:
         self.cipher = RollingCipher()
         self.is_running = True
 
-    def send_secure_packet(self, priority, data):
-        # Chiffrement automatique avant mise en file d'attente
-        encrypted_data = self.cipher.encrypt(data)
-        print(f"[🔐] Chiffrement Prio-{priority} effectué.")
-        self.packet_queue.put((priority, time.time(), encrypted_data))
+    def execute_self_destruct(self):
+        print("\n[💀] PROTOCOLO OMEGA ACTIVADO")
+        print("[🔥] Borrando bases de datos... [OK]")
+        print("[🔥] Destruyendo llaves de cifrado... [OK]")
+        # Aquí se ejecutaría el comando de sistema para borrar el directorio
+        # os.system("rm -rf ~/SOVEREIGN-CORE-PSC") 
+        print("[🏁] TERMINAL NEUTRALIZADO.")
+        self.is_running = False
+
+    def receiver_logic(self, enc_data):
+        dec_data = self.cipher.decrypt(enc_data)
+        if dec_data == "ACTIVATE_OMEGA_ERASE":
+            self.execute_self_destruct()
+        else:
+            print(f"\n[📡] MENSAJE RECIBIDO: {dec_data}")
 
     def transmitter(self):
-        print("[📡] ÉMETTEUR MESH SÉCURISÉ ACTIF")
+        print("[📡] MESH v8.0-PLATINUM ACTIVO (MODO ESCUCHA)")
         while self.is_running:
             if not self.packet_queue.empty():
                 prio, timestamp, enc_data = self.packet_queue.get()
-                # Simulation de réception et déchiffrement par un autre agent
-                dec_data = self.cipher.decrypt(enc_data)
-                print(f"\n[⚡] RECEPTION NIVEAU {prio}")
-                print(f" >> RAW (Radio): {enc_data}")
-                print(f" >> CLEAR (Agent): {dec_data}")
-                time.sleep(0.8)
+                self.receiver_logic(enc_data)
+                time.sleep(0.5)
             time.sleep(0.1)
 
     def start(self):
@@ -60,7 +67,11 @@ class TacticalMesh:
 if __name__ == "__main__":
     mesh = TacticalMesh()
     mesh.start()
-    mesh.send_secure_packet(1, "ALERTE: Incursion drone - Secteur Goma")
-    mesh.send_secure_packet(2, "PAYMENT: 50,000 CDF interceptés")
-    time.sleep(4)
+    
+    # Simulación de recepción de comando de destrucción remota
+    print("[🛰️] Enviando señal de comando desde el QG...")
+    token = mesh.cipher.encrypt("ACTIVATE_OMEGA_ERASE")
+    mesh.packet_queue.put((1, time.time(), token))
+    
+    time.sleep(3)
 EOF
