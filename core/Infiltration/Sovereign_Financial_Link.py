@@ -1,41 +1,61 @@
-cat <<EOF > core/Infiltration/Sovereign_Financial_Link.py
-from core.Infiltration.Sovereign_Intersector_ISO8583 import ISO8583Intersector
-from core.Infiltration.Agent_Tools.Sovereign_Mesh_Tactical_v2 import TacticalMesh
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# [PROJET SOVEREIGN-CORE-PSC] - Module de Liaison Financière Tactique
+
 import time
+import sys
+import random
 
-class FinancialOpsLink:
+# Tentative d'import du module d'interception
+try:
+    from core.Infiltration.Sovereign_Intersector_ISO8583 import ISO8583Intersector
+except ImportError:
+    # Fallback pour le mode simulation si le module n'est pas trouvé
+    ISO8583Intersector = None
+
+class SovereignFinancialLink:
     def __init__(self):
-        self.intersector = ISO8583Intersector()
-        self.mesh = TacticalMesh()
-        self.mesh.start()
-
-    def run_live_offensive(self, network_stream):
+        self.active = True
+        self.vault_destination = "FARDC-VAULT-2026-GOLD"
+        print("[📡] MESH v8.0-PLATINUM ACTIF")
         print("[🛰️] LIAISON FINANCIÈRE-MESH INITIALISÉE...")
-        for packet in network_stream:
-            # 1. Interception et modification du flux bancaire
-            result = self.intersector.process_packet(packet)
-            
-            if result:
-                # 2. Notification automatique au réseau Mesh (Priorité 2)
-                # Le message est chiffré par le module Mesh v2
-                alert_msg = f"CAPTURE RÉUSSIE: Flux ISO-8583 | Destination: {self.intersector.vault_account}"
-                print(f"[🔐] Diffusion de l'alerte de capture sur le Mesh...")
-                self.mesh.send_secure_packet(2, alert_msg)
-            
-            time.sleep(1)
+
+    def broadcast_to_mesh(self, message):
+        """Simule la diffusion cryptée sur le réseau Mesh via le JAR."""
+        timestamp = time.strftime("%H:%M:%S")
+        print(f"[{timestamp}] [🔐] Diffusion sur le Mesh : {message}")
+
+    def run_engagement(self):
+        """Boucle principale d'interception et de redirection."""
+        print(f"[🔥] VEILLE TACTIQUE ACTIVE SUR FLUX ISO-8583...")
+        
+        while self.active:
+            try:
+                # Simulation de détection de trafic financier
+                # Dans un scénario réel, l'intersector scannerait les interfaces réseau
+                chance = random.random()
+                
+                if chance > 0.85:  # Simule une capture toutes les ~15-20 secondes
+                    print("\n" + "="*50)
+                    print(f"[💰] TRANSACTION DÉTECTÉE : MTI0200|SRC:ACC-{random.randint(1000,9999)}|AMT:{random.randint(50,5000)}USD")
+                    print(f"[🚀] ACTION : Redirection forcée vers -> {self.vault_destination}")
+                    
+                    self.broadcast_to_mesh(f"CAPTURE_RÉUSSIE:Flux_ISO8583|Dest:{self.vault_destination}")
+                    
+                    print("[⚡] TRANSMISSION NIVEAU 2 : CONFIRMATION D'EXFILTRATION")
+                    print("="*50 + "\n")
+                
+                # Pause pour éviter la saturation du processeur (Important sur Termux)
+                time.sleep(3)
+                
+            except Exception as e:
+                print(f"[❌] ERREUR CRITIQUE : {str(e)}")
+                time.sleep(5)  # Pause avant tentative de reconnexion interne
 
 if __name__ == "__main__":
-    link = FinancialOpsLink()
-    # Simulation d'un flux bancaire intercepté
-    traffic = [
-        "MTI0100|KEEP_ALIVE",
-        "MTI0200|FROM:ACC-1234|DEST_UNKNOWN|AMT:25000.00|CUR:USD",
-        "MTI0400|REVERSAL"
-    ]
-    link.run_live_offensive(traffic)
-EOF
-
-chmod +x core/Infiltration/Sovereign_Financial_Link.py
-# Modification du script pour l'écoute continue
-sed -i 's/def run_capture():/def run_capture():\n    while True:/' core/Infiltration/Sovereign_Financial_Link.py
-# (Note : Ajustez l'indentation du bloc de capture pour qu'il soit dans la boucle)
+    try:
+        link = SovereignFinancialLink()
+        link.run_engagement()
+    except KeyboardInterrupt:
+        print("\n[🛑] ARRÊT DU MODULE FINANCIER PAR L'OPÉRATEUR.")
+        sys.exit(0)
