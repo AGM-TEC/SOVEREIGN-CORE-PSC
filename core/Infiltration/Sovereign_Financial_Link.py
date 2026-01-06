@@ -36,3 +36,6 @@ if __name__ == "__main__":
 EOF
 
 chmod +x core/Infiltration/Sovereign_Financial_Link.py
+# Modification du script pour l'écoute continue
+sed -i 's/def run_capture():/def run_capture():\n    while True:/' core/Infiltration/Sovereign_Financial_Link.py
+# (Note : Ajustez l'indentation du bloc de capture pour qu'il soit dans la boucle)
