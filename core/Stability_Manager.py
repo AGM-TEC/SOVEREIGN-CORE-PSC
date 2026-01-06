@@ -1,7 +1,7 @@
 cat <<EOF > core/Stability_Manager.py
 import subprocess
 import time
-import os
+import sys
 
 processes = {
     "NOYAU_JAR": "java -jar dist/SOVEREIGN-CORE-PSC.jar",
@@ -12,28 +12,27 @@ processes = {
 active_procs = {}
 
 def start_process(name, command):
-    print(f"[🛡️] STABILITÉ : Lancement de {name}...")
-    return subprocess.Popen(command.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-print("="*60)
-print("⚙️ GESTIONNAIRE DE STABILITÉ SOVEREIGN v8.2 ACTIVÉ")
-print("="*60)
+    # En mode debug, on laisse passer les erreurs pour voir le problème
+    print(f"[🛡️] STABILITÉ : Tentative de lancement de {name}...")
+    return subprocess.Popen(command.split())
 
 try:
-    # Lancement initial
     for name, cmd in processes.items():
         active_procs[name] = start_process(name, cmd)
+        time.sleep(2) # On laisse le temps au processus de démarrer
 
     while True:
         time.sleep(5)
         for name, proc in active_procs.items():
-            if proc.poll() is not None:  # Le processus s'est arrêté
-                print(f"[⚠️] ALERTE : {name} a crashé ! Relancement immédiat...")
+            status = proc.poll()
+            if status is not None:
+                print(f"[❌] ERREUR FATALE : {name} s'est arrêté (Code: {status})")
+                # On ne relance pas immédiatement pour éviter la saturation
+                time.sleep(10) 
                 active_procs[name] = start_process(name, processes[name])
+
 except KeyboardInterrupt:
-    print("\n[🛑] Arrêt propre des services...")
+    print("\n[🛑] Arrêt des systèmes...")
     for proc in active_procs.values():
         proc.terminate()
 EOF
-
-chmod +x core/Stability_Manager.py
