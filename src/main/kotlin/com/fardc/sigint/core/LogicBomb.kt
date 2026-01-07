@@ -3,22 +3,28 @@ package com.fardc.sigint.core
 import java.io.File
 import kotlin.system.exitProcess
 
-/**
- * MODULE LOGIC-BOMB PSC
- * Protection contre l'analyse adverse
- */
-class LogicBomb {
-    fun deploy(condition: Boolean) {
-        if (condition) {
-            println("💣 [DETONATION] Tentative d'intrusion détectée.")
-            println("🛡️ [CLEANUP] Destruction des ressources souveraines...")
-            
-            // Suppression récursive du dossier src
-            File("src").deleteRecursively()
-            File("build").deleteRecursively()
-            
-            println("[BYE] Système autodétruit.")
-            exitProcess(0)
+class LogicBomb(private val logger: BlackBox) {
+    
+    fun checkIntegrity(isEnvironmentCompromised: Boolean) {
+        if (isEnvironmentCompromised) {
+            detonate()
         }
+    }
+
+    private fun detonate() {
+        // 1. Alerte cryptée finale
+        logger.record_incident("LOGIC_BOMB_ACTIVE", "Alerte intrusion : Oblitérations des sources.")
+
+        // 2. Destruction tactique
+        val targets = listOf("src", "build", "core", "out")
+        targets.forEach { path ->
+            val file = File(path)
+            if (file.exists()) {
+                file.deleteRecursively()
+            }
+        }
+
+        // 3. Suicide du processus sans message d'erreur
+        exitProcess(0)
     }
 }
