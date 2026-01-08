@@ -60,3 +60,21 @@ fun main() {
 
     app.get("/") { it.result("🛡️ SOVEREIGN CORE ONLINE | MODE: ${engine.current_mode}") }
 }
+
+// ... (imports existants)
+
+fun onPortDiscovered(target: String, port: Int) {
+    println("[🚨] ALERTE : Port critique $port découvert sur $target")
+    
+    // VERROUILLAGE AUTOMATIQUE v8.0
+    // Si le port est dans la liste des ports critiques (ex: 80, 443, 8080, 22)
+    val criticalPorts = listOf(22, 80, 443, 8080, 8888)
+    
+    if (criticalPorts.contains(port)) {
+        println("[⚔️] RÉPONSE AUTOMATIQUE : Engagement de l'AutonomousStriker...")
+        
+        val striker = AutonomousStriker(sniffer, fuzzer, logger)
+        striker.initiateAdaptiveStrike(target, port)
+    }
+}
+
