@@ -3,33 +3,34 @@ package com.fardc.sigint.core
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-/**
- * SOVEREIGN-CORE-PSC - Module de Liaison Offensive
- * Permet l'exécution de diagnostics système et de scans réseau
- */
-class OffensiveBridge {
+class OffensiveBridge(private val logger: BlackBox) {
 
     fun executeScan(target: String): String {
-        println("[OFFENSIVE] Initialisation du scan sur : $target")
+        // 1. ASSAINISSEMENT (Sanitization)
+        // On ne garde que les caractères alphanumériques et les points (IP/Domaine)
+        val sanitizedTarget = target.replace(Regex("[^a-zA-Z0-9.-]"), "")
+        
+        println("[OFFENSIVE] Lancement du diagnostic système sur : $sanitizedTarget")
+        logger.record_incident("NETWORK_SCAN_START", "Cible: $sanitizedTarget")
+
         return try {
-            // Exécution d'une commande système réelle (Ping de diagnostic)
-            val process = ProcessBuilder("ping", "-c", "3", target).start()
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            val output = StringBuilder()
-            var line: String?
-            
-            while (reader.readLine().also { line = it } != null) {
-                output.append(line).append("\n")
-            }
-            
+            // 2. EXÉCUTION CONTRÔLÉE
+            val process = ProcessBuilder("ping", "-c", "2", "-W", "2", sanitizedTarget)
+                .redirectErrorStream(true)
+                .start()
+
+            val output = process.inputStream.bufferedReader().use { it.readText() }
             val exitCode = process.waitFor()
+
             if (exitCode == 0) {
-                "[SUCCESS] Cible atteinte :\n$output"
+                logger.record_incident("SCAN_SUCCESS", "Réponse reçue de $sanitizedTarget")
+                "[SUCCESS] Cible active :\n$output"
             } else {
-                "[FAILURE] Cible hors de portée ou protégée."
+                "[FAILURE] Aucune réponse ou accès refusé par la cible."
             }
         } catch (e: Exception) {
-            "[ERROR] Échec critique de l'exécution : ${e.message}"
+            logger.record_incident("SCAN_CRITICAL_FAIL", e.message ?: "Unknown error")
+            "[ERROR] Échec de l'infrastructure d'exécution."
         }
     }
 }
