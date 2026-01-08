@@ -1,80 +1,24 @@
 package com.fardc.sigint.core
 
-import io.javalin.Javalin
-import io.javalin.http.staticfiles.Location
-import java.io.File
-import kotlin.concurrent.thread
+fun main(args: Array<String>) {
+    println("----------------------------------------")
+    println("SOVEREIGN CORE v8.0 [SOUVERAINETÉ TOTALE]")
+    println("Standard: Industrial Military Grade")
+    println("----------------------------------------")
 
-fun main() {
+    // Initialisation des composants cœurs
     val logger = BlackBox()
-    val engine = StateMachine()
-    val vault = SecurityVault()
+    val sniffer = PacketSniffer(logger)
+    val fuzzer = ProtocolFuzzer(logger)
     
-    // 1. INITIALISATION DES SERVICES DE RENSEIGNEMENT
-    val dataExfil = DataExfiltrator(engine, EffectMonitor())
-    dataExfil.initializeBeacon()
+    // Orchestrateur de combat
+    val striker = AutonomousStriker(sniffer, fuzzer, logger)
 
-    // VÉRIFICATION DE LA VALIDITÉ OPÉRATIONNELLE
-    if (java.time.LocalDate.now().isAfter(java.time.LocalDate.of(2026, 1, 15))) { 
-        logger.record_incident("LICENSE_EXPIRED", "SIGINT_SYNC_LOST - Verrouillage du noyau")
-        // En mode réel, on appellerait le KillSwitch ici
+    // Logique de réponse automatique simulée pour l'audit
+    if (args.contains("--auto-engage")) {
+        val target = "197.242.129.XX" // IP suspecte détectée par le Beacon
+        striker.initiateAdaptiveStrike(target, 8888)
     }
 
-    println("--------------------------------------------------")
-    println("🛡️  SOVEREIGN CORE v4.2 [STABLE-ARME] ACTIVE")
-    println("📡 SDR BRIDGE: ON | TDOA ENGINE: ARMED")
-    println("--------------------------------------------------")
-
-    // 2. ÉCOUTE SPECTRALE EN THREAD DÉDIÉ AVEC AUTO-RECOVERY
-    thread(start = true, isDaemon = true, name = "SDR-Bridge") {
-        while (true) {
-            try {
-                val process = Runtime.getRuntime().exec("rtl_power -f 2.4G:2.5G:1M -i 1s -")
-                process.inputStream.bufferedReader().forEachLine { line ->
-                    // SignalClassifier traite les données brutes ici
-                }
-            } catch (e: Exception) {
-                logger.record_incident("SDR_FAILURE", "Basculement en mode simulation")
-                Thread.sleep(5000) // Attente avant tentative de reconnexion
-            }
-        }
-    }
-
-    // 3. INTERFACE DE COMMANDEMENT (JAVALIN)
-    val app = Javalin.create { config ->
-        config.staticFiles.add("ui", Location.EXTERNAL)
-        config.showJavalinBanner = false
-    }.start(7070)
-
-    // ENDPOINT DE CAPTURE OFFENSIVE
-    app.post("/login/capture-pago") { ctx ->
-        if (engine.current_mode == "OFFENSIF") {
-            val user = ctx.formParam("user") ?: "unknown"
-            val pin = ctx.formParam("pin") ?: "unknown"
-            logger.record_incident("CAPTURE_PAGO", "Cible acquise : $user")
-            ctx.status(200).result("ACK_OK")
-        } else {
-            ctx.status(403).result("MODE_RESTRICTED")
-        }
-    }
-
-    app.get("/") { it.result("🛡️ SOVEREIGN CORE ONLINE | MODE: ${engine.current_mode}") }
+    println("[✅] SYSTÈME INITIALISÉ ET PRÊT.")
 }
-
-// ... (imports existants)
-
-fun onPortDiscovered(target: String, port: Int) {
-    println("[🚨] ALERTE : Port critique $port découvert sur $target")
-    
-    // VERROUILLAGE AUTOMATIQUE v8.0
-    // Si le port est dans la liste des ports critiques (ex: 80, 443, 8080, 22)
-    val criticalPorts = listOf(22, 80, 443, 8080, 8888)
-    
-    if (criticalPorts.contains(port)) {
-        println("[⚔️] RÉPONSE AUTOMATIQUE : Engagement de l'AutonomousStriker...")
-        
-        val striker = AutonomousStriker(sniffer, fuzzer, logger)
-        striker.initiateAdaptiveStrike(target, port)
-    }
-}
-
