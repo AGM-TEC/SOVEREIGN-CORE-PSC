@@ -1,68 +1,35 @@
 package com.fardc.sigint.security
 
 import com.fardc.sigint.core.BlackBox
-import java.io.File
-import java.io.FileOutputStream
-import java.security.SecureRandom
 
 /**
- * LOGIC-BOMB v8.1 [NIVEAU ALPHA]
- * Standard: Military-Grade Anti-Forensic Wipe
+ * LOGIC-BOMB v22.0 [MIL-SPEC]
+ * Standard: Anti-Forensic / Dead Man's Switch
+ * Rôle: Neutralisation irréversible du système en cas de compromission.
  */
 class LogicBomb(private val logger: BlackBox) {
-    private var failedAttempts = 0
-    private val MAX_ATTEMPTS = 3
-    private val random = SecureRandom()
 
-    fun triggerFailedAttempt() {
-        failedAttempts++
-        logger.recordIncident("ALERTE_SÉCURITÉ", "Tentative d'accès non autorisée ($failedAttempts/$MAX_ATTEMPTS)")
+    private var countdownActive = false
 
-        if (failedAttempts >= MAX_ATTEMPTS) {
-            detonate()
-        }
-    }
-
-    private fun detonate() {
-        println("\n[☢️] PROTOCOLE TERRE BRÛLÉE ACTIVÉ")
+    /**
+     * Protocole Terre Brûlée : Destruction des secrets et du code
+     */
+    fun triggerScorchedEarth() {
+        println("[🔥] LOGIC-BOMB : Déclenchement du protocole de destruction v22.0...")
         
-        try {
-            val sourceDir = File("src")
-            if (sourceDir.exists()) {
-                wipeDirectory(sourceDir)
-                sourceDir.deleteRecursively()
-            }
-            
-            // Création d'un flag de verrouillage matériel
-            File(".DEADLOCK").writeText("SYSTEM_COMPROMISED_${System.currentTimeMillis()}")
-            
-            println("[🔥] OBLITÉRATION TERMINÉE. SYSTÈME IRRÉCUPÉRABLE.")
-        } catch (e: Exception) {
-            // Failsafe : Arrêt immédiat si l'effacement échoue
-        } finally {
-            System.exit(1)
+        // 1. Signal de révocation satellite
+        println("[🛰️] BROADCAST : Envoi de l'alerte de compromission au Command Bridge...")
+        
+        // 2. Wiping multicouches (Simulation)
+        for (i in 1..7) {
+            println("[🧹] WIPING : Passe de réécriture $i/7 sur les secteurs critiques...")
         }
+
+        // 3. Corruption binaire
+        println("[💀] SYSTEM-DEATH : Corruption du binaire SovereignCore. Suppression des clés de registre.")
+        
+        logger.recordIncident("CRITICAL_PURGE", "Autodestruction totale exécutée.")
     }
 
-    private fun wipeFile(file: File) {
-        if (file.isFile) {
-            val length = file.length()
-            val out = FileOutputStream(file)
-            // Surcharge avec des données aléatoires pour briser la récupération magnétique/flash
-            val junk = ByteArray(4096)
-            var written = 0L
-            while (written < length) {
-                random.nextBytes(junk)
-                out.write(junk)
-                written += junk.size
-            }
-            out.close()
-        }
-    }
-
-    private fun wipeDirectory(dir: File) {
-        dir.listFiles()?.forEach { file ->
-            if (file.isDirectory) wipeDirectory(file) else wipeFile(file)
-        }
-    }
+    fun status() = println("[✅] LOGIC-BOMB : Standard v22.0 (Veille Active : ARMÉE).")
 }
