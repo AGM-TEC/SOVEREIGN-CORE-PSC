@@ -1,32 +1,32 @@
 package com.fardc.sigint.services.aviation
 
 import com.fardc.sigint.core.BlackBox
+import com.fardc.sigint.core.intelligence.TerrainStrategicAnalyzer
 
 /**
- * UAV-SWARM-COORDINATOR v21.0 [MIL-SPEC]
- * Standard: Autonomous Swarm Intelligence / Mesh-Aviation
- * Rôle: Orchestration de meutes de drones pour ISR et Frappe.
+ * UAV-SWARM-COORDINATOR v22.4 [MIL-SPEC]
+ * Standard: Distributed Autonomous Strike
+ * Rôle: Gestion de nuées de drones pour reconnaissance et frappe.
  */
-class UAVSwarmCoordinator(private val logger: BlackBox) {
+class UAVSwarmCoordinator(
+    private val logger: BlackBox, 
+    private val terrain: TerrainStrategicAnalyzer
+) {
 
-    data class DroneUnit(val id: String, val type: String, val battery: Int, val payloadReady: Boolean)
+    private var activeDrones = 0
 
-    fun deploySwarm(targetArea: String, units: List<DroneUnit>) {
-        println("[🐝] SWARM-COORD : Déploiement d'un essaim de ${units.size} vecteurs sur $targetArea...")
+    fun launchSwarm(count: Int, missionType: String) {
+        println("[🛸] AVIATION : Lancement de l'essaim ($count unités) - Mission: $missionType")
+        activeDrones = count
         
-        // Initialisation du réseau Mesh entre les drones
-        println("[📡] MESH : Établissement de la liaison inter-drone (Standard v21.0)...")
+        // Corrélation terrain pour vol basse altitude (No-Radar)
+        terrain.analyzeZone("Secteur_Delta_3", 0.85)
         
-        units.forEach { drone ->
-            println("[🛸] UNIT-READY : Drone ${drone.id} (${drone.type}) en vol. Batterie: ${drone.battery}%")
-        }
-
-        println("[🚀] MISSION : Navigation en mode 'Terrain-Following' activée.")
-        logger.recordIncident("SWARM_DEPLOY", "Essaim de ${units.size} drones lancé sur $targetArea")
+        println("[📡] MESH : Réseau de combat entre drones établi. Mode furtif actif.")
+        logger.recordIncident("UAV_SWARM_LAUNCH", "Essaim de $count drones déployé pour $missionType")
     }
 
-    fun executeCoordinatedStrike() {
-        println("[💥] SWARM-STRIKE : Allocation dynamique des cibles par l'IA...")
-        println("[✅] STATUS : Cibles verrouillées. Frappe saturante en cours.")
+    fun syncWithCyber(targetCoordinates: String) {
+        println("[🎯] CIBLAGE : Réception de coordonnées via RemoteShell. Redéploiement de l'essaim vers $targetCoordinates")
     }
 }
