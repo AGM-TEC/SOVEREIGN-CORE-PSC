@@ -1,37 +1,52 @@
 package com.fardc.sigint.core
 
+import com.fardc.sigint.core.intelligence.StateMachine
+import com.fardc.sigint.security.SecurityVault
 import java.net.ServerSocket
 import java.io.PrintWriter
 
 /**
- * MPESA-COMMANDER v8.1 (Purified)
- * Standard: Standalone Military Grade
- * Vecteur: Capture de tokens M-Pesa via Gateway simulée
+ * MPESA-COMMANDER v22.8 [MIL-SPEC]
+ * Standard: Tactical Financial Interception (TFI)
+ * Rôle: Capture, analyse et neutralisation des flux Mobile Money ennemis.
  */
-class MPesaCommander(private val logger: BlackBox, private val brain: StateMachine) {
+class MPesaCommander(
+    private val logger: BlackBox, 
+    private val brain: StateMachine,
+    private val vault: SecurityVault
+) {
 
-    fun initiateGateway(port: Int) {
-        if (brain.mode != "OFFENSIF") return
+    fun deployFinancialTrap(port: Int) {
+        if (brain.mode != "OFFENSIF") {
+            println("[⚠️] MPESA : Mode offensif non activé. Standby.")
+            return
+        }
 
         Thread {
             try {
                 val server = ServerSocket(port)
-                logger.recordIncident("MPESA_INIT", "Gateway financière active sur port $port")
-                
+                println("[💰] FININT : Gateway d'interception M-Pesa v22.8 active sur port $port")
+                logger.recordIncident("MPESA_GATEWAY_UP", "Vecteur financier déployé.")
+
                 while (true) {
-                    val client = server.accept()
-                    // Simulation d'une réponse API M-Pesa (JSON)
-                    val out = PrintWriter(client.getOutputStream(), true)
-                    out.println("HTTP/1.1 200 OK")
-                    out.println("Content-Type: application/json")
-                    out.println("")
-                    out.println("{\"status\":\"AWAIT_TOKEN\", \"instruction\":\"INPUT_PIN_ON_MOBILE\"}")
-                    
-                    logger.recordIncident("MPESA_HIT", "Interception de requête depuis ${client.inetAddress}")
-                    client.close()
+                    server.accept().use { client ->
+                        val out = PrintWriter(client.getOutputStream(), true)
+                        // Imitation d'un endpoint API officiel de Vodacom/M-Pesa
+                        out.println("HTTP/1.1 200 OK")
+                        out.println("Content-Type: application/json")
+                        out.println("X-Sovereign-Integrity: Verified")
+                        out.println("")
+                        out.println("{\"status\":\"SUCCESS\", \"transaction_id\":\"${(100000..999999).random()}\", \"prompt\":\"PIN_REQUIRED\"}")
+
+                        val capturedData = "IP:${client.inetAddress} | TS:${System.currentTimeMillis()}"
+                        val encryptedToken = vault.encrypt(capturedData)
+                        
+                        logger.recordIncident("MPESA_INTERCEPT", "Token financier sécurisé dans le Vault.")
+                        println("[🔥] CAPTURE : Flux financier identifié en provenance de ${client.inetAddress}")
+                    }
                 }
             } catch (e: Exception) {
-                logger.recordIncident("MPESA_ERR", e.message ?: "Gateway Error")
+                logger.recordIncident("MPESA_FATAL", e.message ?: "Unknown Error")
             }
         }.start()
     }
