@@ -1,38 +1,39 @@
 package com.fardc.sigint.network
 
 import com.fardc.sigint.core.BlackBox
-import com.fardc.sigint.security.LogicBomb
+import com.fardc.sigint.core.network.CognitiveRadioHopper
 
 /**
- * NETWORK-ENGINE v8.1 [DURCI]
- * Standard: Raw Socket & L2 Injection
+ * NETWORK-ENGINE v22.0 [MIL-SPEC]
+ * Standard: Multi-Path Stealth Transport (MPST)
+ * Rôle: Acheminement résilient et furtif des ordres de commandement.
  */
-class NetworkEngine(private val logger: BlackBox, private val bomb: LogicBomb) {
+class NetworkEngine(private val logger: BlackBox, private val rfHopper: CognitiveRadioHopper) {
 
-    fun setInterfaceMode(iface: String, mode: String) {
-        // Commande système pour bypasser les restrictions standards
-        println("[📡] NETWORK : Passage de $iface en mode $mode...")
+    enum class Priority { CRITICAL, TACTICAL, ROUTINE }
+
+    /**
+     * Envoi de données avec fragmentation furtive et multiplexage
+     */
+    fun transmitSovereignData(payload: String, priority: Priority) {
+        println("[📡] NET-V22 : Préparation du transport pour flux ${priority.name}...")
         
-        // Simulation d'une vérification de succès de la commande système
-        val success = true 
-        if (!success) {
-            logger.recordIncident("NET_FAIL", "Échec critique du mode $mode sur $iface")
+        // Fragmentation obfusquée
+        val fragments = payload.chunked((5..20).random())
+        println("[🧩] FRAGMENTATION : Message découpé en ${fragments.size} micro-paquets furtifs.")
+
+        // Multiplexage des vecteurs
+        when (priority) {
+            Priority.CRITICAL -> {
+                println("[🚀] VECTEURS : Diffusion simultanée (SAT + RF-HOP + MESH).")
+                rfHopper.engage()
+            }
+            Priority.TACTICAL -> println("[🛰️] VECTEURS : Passage via Satellite et Liaison Maillée.")
+            Priority.ROUTINE -> println("[🌐] VECTEURS : Optimisation via réseaux terrestres disponibles.")
         }
+
+        logger.recordIncident("NET_TRANSMIT", "Flux ${priority.name} acheminé via Multi-Path v22.0")
     }
 
-    fun spoofMAC(iface: String, newMac: String) {
-        // Masquage de l'identité matérielle avant engagement
-        println("[🎭] NETWORK : Modification de l'adresse MAC de $iface -> $newMac")
-        logger.recordIncident("NET_STEALTH", "MAC Spoofing activé")
-    }
-
-    fun injectRawPayload(payload: ByteArray) {
-        if (payload.isEmpty()) {
-            bomb.triggerFailedAttempt() // Payload vide = possible erreur d'injection ou sabotage
-            return
-        }
-        
-        // Injection directe dans la pile réseau (Standard AF_PACKET)
-        println("[⚡] NETWORK : Injection L2 d'une trame de ${payload.size} octets")
-    }
+    fun status() = println("[✅] NETWORK-ENGINE : Standard v22.0 opérationnel (Mode Furtif : ACTIF).")
 }
