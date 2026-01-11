@@ -1,7 +1,16 @@
 package com.fardc.sigint.core.hardware
-import com.fardc.sigint.core.BlackBox
-import com.fardc.sigint.core.intelligence.StateMachine
-class SovereignHAL(private val logger: BlackBox, private val brain: StateMachine) {
-    fun engage() = println("[🔌] SOVEREIGN-HAL v24.2 : Pont matériel MDO audité et prêt.")
-    fun getStatus(): String = "READY_FOR_COMBAT"
+
+class SovereignHAL {
+    fun getTelemetry(): Map<String, Any> {
+        return mapOf(
+            "DRONE_BATTERY" to 95,
+            "SIGNAL_STRENGTH" to -45,
+            "KINETIC_READY" to true,
+            "GPS_COORD" to "S 1.6742, E 29.2285"
+        )
+    }
+    
+    fun triggerHardwareAction(action: String, params: Map<String, String>) {
+        println("[🦾] HAL-EXEC : $action avec paramètres $params")
+    }
 }
