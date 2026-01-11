@@ -1,7 +1,7 @@
 package com.fardc.sigint.core
 
 import com.fardc.sigint.security.*
-import com.fardc.sigint.network.NetworkEngine
+import com.fardc.sigint.core.network.NetworkEngine
 import com.fardc.sigint.core.intelligence.*
 
 fun main(args: Array<String>) {
