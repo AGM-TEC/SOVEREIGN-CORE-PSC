@@ -1,8 +1,9 @@
 package com.fardc.sigint.security
 import com.fardc.sigint.core.BlackBox
-class PostQuantumShield(private val logger: BlackBox) {
+import com.fardc.sigint.core.hardware.SovereignHAL
+class PostQuantumShield(private val logger: BlackBox, private val hal: SovereignHAL) {
     fun engage() {
-        println("[🛡️] SOVEREIGN-PQC v28.1 : Cryptographie Post-Quantique active.")
-        println("[🇨🇩] SÉCURITÉ : Communications inviolables au niveau atomique.")
+        println("[🛡️] SOVEREIGN-PQC v30.1 : Cryptographie Post-Quantique active.")
+        println("[🇨🇩] SOUVERAINETÉ : Vos secrets sont protégés pour les 50 prochaines années.")
     }
 }
