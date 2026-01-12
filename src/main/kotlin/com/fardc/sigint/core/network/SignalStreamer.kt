@@ -1,4 +1,4 @@
-package com.fardc.sigint.core.network
+package com.fardc.sigint.network
 
 import com.fardc.sigint.core.BlackBox
 import java.util.concurrent.ConcurrentHashMap

