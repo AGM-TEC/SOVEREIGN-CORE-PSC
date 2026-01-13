@@ -1,0 +1,2 @@
+#!/bin/bash
+java -cp build/bin/SovereignCore-v34.30-FINAL.jar com.fardc.sigint.core.IntegrityCheck
