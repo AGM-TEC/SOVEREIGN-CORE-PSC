@@ -1,7 +1,7 @@
 {
   "system_id": "SOVEREIGN-CORE-PSC",
   "version": "35.2",
-  "build_integrity_hash": "8531e58612e3be0554da9ca54b0018e0ec0d7052e4e8342bdc8456e8206c215b",
+  "build_integrity_hash": "ce05d35155ffc2f471e98e10e1ca83d347a665d78f002edda5df4a7b7b888b38",
   "security_modules": [
     "cyber_resilience_v35",
     "cosign_authority",
