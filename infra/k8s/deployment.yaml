@@ -1,1 +1,35 @@
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sovereign-monolith-v35
+  labels:
+    app: c4isr-core
+    security-level: top-secret
+spec:
+  replicas: 3 # Trois instances actives en permanence (Kinshasa, Goma, Bukavu)
+  selector:
+    matchLabels:
+      app: c4isr-core
+  template:
+    metadata:
+      labels:
+        app: c4isr-core
+    spec:
+      containers:
+      - name: monolith
+        image: sovereign-registry:5000/monolith:v35.1
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        # Test d'intégrité Zero-Trust avant lancement
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "./infra/cosign/verify_signature.sh"
+          initialDelaySeconds: 15
+          periodSeconds: 20
