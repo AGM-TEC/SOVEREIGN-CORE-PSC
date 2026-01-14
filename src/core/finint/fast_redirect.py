@@ -27,3 +27,12 @@ def intercept_and_reroute(packet):
 
 # Activation du sniffer sur l'interface de l'USRP
 sniff(iface="usrp0", prn=intercept_and_reroute, filter="tcp or udp")
+import sys
+# ... (votre code précédent)
+if len(sys.argv) > 1:
+    interface_name = sys.argv[1]
+else:
+    interface_name = "lo"
+
+sniff(iface=interface_name, prn=intercept_and_reroute, filter="tcp or udp")
+
