@@ -1,15 +1,23 @@
 {
-  "system_id": "SOVEREIGN-CORE-PSC",
-  "version": "35.2",
-  "build_integrity_hash": "ce05d35155ffc2f471e98e10e1ca83d347a665d78f002edda5df4a7b7b888b38",
-  "security_modules": [
-    "cyber_resilience_v35",
-    "cosign_authority",
-    "network_switch_failover",
-    "precognition_trahison_module"
-  ],
-  "dependencies": "Zero-External-Dependencies (Sovereign Build)",
-  "audit_status": "PURIFIED_CLEAN",
-  "deployment_ready": true,
-  "timestamp": "Tue Jan 13 17:04:46 -04 2026"
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:fardc-alpha15-v35-2026",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-01-13T21:30:00Z",
+    "tools": [ { "vendor": "Sovereign-Forge", "name": "C4ISR-Auditor" } ],
+    "component": {
+      "group": "cd.gov.fardc",
+      "name": "Sovereign_C4ISR",
+      "version": "35.1",
+      "type": "application",
+      "hashes": [
+        { "alg": "SHA-256", "content": "346187f3cc3d293a72866ec8aac67894976bb5ce89fbed2405b94b5b0ccd331b" }
+      ]
+    }
+  },
+  "components": [
+    { "name": "Core-Monolith", "version": "35.1", "description": "Cerveau tactique MDO" },
+    { "name": "Infra-Cosign", "version": "1.0", "description": "Module de signature Zero-Trust" }
+  ]
 }
