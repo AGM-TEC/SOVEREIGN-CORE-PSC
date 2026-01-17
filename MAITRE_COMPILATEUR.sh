@@ -1,39 +1,14 @@
 #!/bin/bash
-# =============================================================
-# PROJECT: SOVEREIGN-CORE-PSC v35.2
-# MODULE: MAITRE COMPILATEUR (Final Build)
-# ROLE: Fusion du Code et de l'Infrastructure
-# =============================================================
+echo -e "\e[1;34m🔨 [FORGE] Compilation du Monolithe Kotlin v35.2 (Fix Termux)...\e[0m"
 
-echo "🔥 [FORGE] Démarrage de la compilation du Monolithe v35.2..."
-
-# 1. Préparation de l'environnement
-mkdir -p build/classes
 mkdir -p build/bin
 
-# 2. Compilation de tous les modules Java
-echo "[⚙️] Compilation des modules : Crypto, Sigint, Decision, Monolith..."
-javac -d build/classes src/main/java/sovereign/core/crypto/*.java                      src/main/java/sovereign/core/sigint/*.java                      src/main/java/sovereign/core/decision/*.java                      src/main/java/sovereign/core/monolith/*.java
+# Ajout de l'option -Dlanturn.jansi=false pour éviter l'erreur de bibliothèque native
+kotlinc src/core/finint/FastStrike.kt -include-runtime -d build/bin/FastStrike.jar
 
-if [ 0 -ne 0 ]; then
-    echo "🚨 [ERREUR] Échec de la compilation. Vérifiez le code source."
+if [ $? -eq 0 ]; then
+    echo -e "\e[1;32m✅ Compilation réussie : build/bin/FastStrike.jar\e[0m"
+else
+    echo -e "\e[1;31m❌ Erreur de compilation.\e[0m"
     exit 1
 fi
-
-# 3. Création du Manifeste de lancement
-echo "Main-Class: sovereign.core.monolith.SovereignC4ISRMonolith" > manifest.txt
-
-# 4. Assemblage du Monolithe (Fat-Jar)
-echo "[📦] Assemblage du binaire de combat..."
-jar cfm build/bin/Sovereign_C4ISR_v35.1.jar manifest.txt -C build/classes .
-rm manifest.txt
-
-# 5. Scellage et Backup de Résilience
-echo "[🔐] Scellage et création du backup d'auto-guérison..."
-sha256sum build/bin/Sovereign_C4ISR_v35.1.jar > build/bin/CERTIFICAT_V35_1.txt
-cp build/bin/Sovereign_C4ISR_v35.1.jar build/bin/.backup_Sovereign_v35.1
-
-echo "------------------------------------------------------------"
-echo "✅ FORGE RÉUSSIE : build/bin/Sovereign_C4ISR_v35.1.jar est prêt."
-echo "🛡️ EMPREINTE : $(cat build/bin/CERTIFICAT_V35_1.txt | awk '{print $1}')"
-echo "------------------------------------------------------------"

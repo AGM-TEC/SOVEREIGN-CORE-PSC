@@ -1,15 +1,5 @@
-# --- SECTION SÉCURITÉ : EXCLUSIONS ---
-*.log
-*.tmp
-*.env
-auth_keys/
-config/private/
-
-# --- SECTION PROPRETÉ : IDE ---
-.idea/
-.vscode/
-*.swp
-
-# --- SECTION SOUVERAINETÉ : EXCEPTIONS (FORCER) ---
-!build/bin/Sovereign_C4ISR_v35.1.jar
-!build/bin/CERTIFICAT_V35_1.txt
+*.dat
+*.iq
+*.jar
+*.class
+uhd/
