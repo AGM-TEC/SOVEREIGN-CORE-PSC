@@ -1,0 +1,58 @@
+package core.state
+
+// Définition stricte des postures doctrinales
+enum class CombatState {
+    STANDBY,    // Veille : Économie d'énergie, écoute réseau Mesh uniquement.
+    STEALTH,    // Furtif : SIGINT passif, zéro émission RF.
+    OFFENSIVE,  // Actif : Interception, brouillage, exfiltration.
+    LOCKDOWN    // Compromission : Isolation réseau, préparation Zeroization.
+}
+
+class CombatModeHandler {
+    private var currentState: CombatState = CombatState.STANDBY
+    private val lock = Any() // Verrouillage de thread (Thread-safe)
+
+    // Arbitrage des États : Barrière entre l'IHM et le Core
+    fun transitionTo(newState: CombatState, authorizationKey: String): Boolean {
+        synchronized(lock) {
+            // 1. Validation de l'Ordre (Lien avec le Gatekeeper)
+            if (!verifySignature(authorizationKey)) {
+                println("[ALERTE] Tentative de transition non autorisée vers \$newState")
+                triggerSecurityAnomaly()
+                return false
+            }
+
+            // 2. Protection Anti-Flapping (Instabilité d'état)
+            if (currentState == newState) return true
+
+            // 3. Règle d'Engagement Stricte : Un Lockdown est irréversible logiciellement
+            if (currentState == CombatState.LOCKDOWN) {
+                println("[ERREUR FATALE] Système verrouillé en mode survie. Transition impossible.")
+                return false
+            }
+
+            println("[TRANSITION SCADA] État précédent : \$currentState -> Nouvel état : \$newState")
+            currentState = newState
+            
+            // 4. Propagation de l'état aux capteurs (SDR, FinINT)
+            notifyModules(currentState)
+            return true
+        }
+    }
+
+    private fun verifySignature(key: String): Boolean {
+        // Logique de validation d'empreinte (Simulation)
+        return key.startsWith("AUTH-SOUVERAIN")
+    }
+
+    private fun triggerSecurityAnomaly() {
+        // Déclenche une exception propriétaire. Redirection vers BlackBox.kt
+        println("[EXCEPTION] SecurityAnomaly générée. Verrouillage du processus en cours.")
+    }
+
+    private fun notifyModules(state: CombatState) {
+        println("[SYSTÈME] Notification de la doctrine de combat (\$state) propagée au HAL.")
+    }
+    
+    fun getCurrentState(): CombatState = currentState
+}
