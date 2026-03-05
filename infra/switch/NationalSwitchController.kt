@@ -2,55 +2,58 @@ package infra.switch
 
 import sigint.audit.LogManager
 import sigint.core.Gatekeeper
-import java.security.Signature
+import java.util.concurrent.ConcurrentHashMap
 
 /**
- * SRC - NationalSwitchController
+ * SRC - NationalSwitchController (GRADE 0 - Thread-Safe)
  * Contrôleur de la Chambre de Compensation Nationale.
- * Gère le filtrage massif des transactions ISO 8583.
  */
 class NationalSwitchController(private val gatekeeper: Gatekeeper) {
 
-    // Liste noire des comptes (RIB/Mobile Money) synchronisée avec l'État-Major
-    private val blacklistedAccounts = mutableSetOf<String>()
+    // Pivot Technique : Structure Thread-Safe pour éviter les crashs de concurrence (Race Conditions)
+    // Limite théorique fixée pour prévenir les fuites de mémoire (OOM) sur terminal mobile.
+    private val blacklistedAccounts = ConcurrentHashMap.newKeySet<String>()
+    private val MAX_BLACKLIST_SIZE = 500_000 
 
     /**
-     * Point d'entrée pour chaque message financier passant par le switch.
+     * Point d'entrée asynchrone pour le filtrage ISO 8583.
      */
     fun onTransactionRequest(isoMessage: ISOMessage, authSignature: ByteArray): ISOMessage {
-        
-        // 1. Vérification de l'autorisation d'accès au Switch (Signature EM)
         if (!gatekeeper.verifyCommand(authSignature)) {
-            LogManager.warn("SWITCH_AUTH_FAIL: Tentative de contrôle sans signature valide.")
-            return isoMessage // On laisse passer par défaut pour ne pas bloquer l'économie
+            LogManager.warn("SWITCH_AUTH_FAIL: Rejet de commande non signée.")
+            return isoMessage 
         }
 
-        // 2. Extraction du compte destinataire (Champ 102 dans la norme ISO 8583)
         val targetAccount = isoMessage.getField(102)
 
-        // 3. Filtrage offensif
+        // Recherche en temps constant O(1)
         if (blacklistedAccounts.contains(targetAccount)) {
-            LogManager.info("SWITCH_BLOCK: Transaction vers $targetAccount interceptée.")
+            LogManager.info("SWITCH_BLOCK: Interception du flux vers $targetAccount.")
             
-            // On modifie le code de réponse (Champ 39) : "57 - Transaction non permise"
             return isoMessage.apply {
-                setField(39, "57")
-                setField(44, "STATE_SEIZURE_ORDER") // Information de saisie
+                setField(39, "57") // 57 = Transaction non permise (Standard ISO 8583)
+                setField(44, "STATE_SEIZURE_ORDER")
             }
         }
 
-        return isoMessage // Transaction autorisée
+        return isoMessage
     }
 
+    /**
+     * Mise à jour de la matrice de ciblage.
+     */
     fun updateBlacklist(newTargets: List<String>) {
-        this.blacklistedAccounts.addAll(newTargets)
-        LogManager.info("SWITCH_SYNC: Liste noire mise à jour (${newTargets.size} cibles).")
+        // Disjoncteur mémoire : Purge si la limite physique est atteinte
+        if (blacklistedAccounts.size + newTargets.size > MAX_BLACKLIST_SIZE) {
+            LogManager.warn("SWITCH_MEM_WARN: Purge thermique de la liste noire.")
+            blacklistedAccounts.clear()
+        }
+        
+        blacklistedAccounts.addAll(newTargets)
+        LogManager.info("SWITCH_SYNC: Matrice mise à jour (${blacklistedAccounts.size} cibles actives).")
     }
 }
 
-/**
- * Structure réelle d'un message ISO 8583 (Simplifiée pour l'implémentation)
- */
 data class ISOMessage(
     val fields: MutableMap<Int, String> = mutableMapOf()
 ) {
