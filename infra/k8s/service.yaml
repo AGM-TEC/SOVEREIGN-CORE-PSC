@@ -1,1 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sovereign-mesh-service
+  namespace: tactical-edge
+spec:
+  type: ClusterIP # Fermeture des ports externes
+  selector:
+    app: sovereign-core
+  ports:
+  - name: mesh-udp
+    protocol: UDP
+    port: 15500
+    targetPort: 15500
+  - name: dashboard-tcp
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
 
