@@ -1,1 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sovereign-config
+  namespace: tactical-edge
+data:
+  # Variables d'environnement de combat
+  DOCTRINE_TARGET: "VENEZUELA_SEN"
+  LOG_LEVEL: "WARN"
+  MESH_PORT: "15500"
+  MAX_THREADS: "4"
 
