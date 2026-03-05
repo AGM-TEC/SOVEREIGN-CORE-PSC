@@ -1,1 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sovereign-core-monolith
+  namespace: tactical-edge
+spec:
+  replicas: 1 # Mode Edge (1 terminal = 1 nœud)
+  strategy:
+    type: Recreate # Prévention des corruptions d'état lors des redémarrages
+  selector:
+    matchLabels:
+      app: sovereign-core
+  template:
+    metadata:
+      labels:
+        app: sovereign-core
+    spec:
+      containers:
+      - name: monolith-striker
+        image: sovereign-core-node:v34.30
+        imagePullPolicy: Never # Air-Gapped : interdiction de télécharger depuis l'extérieur
+        envFrom:
+        - configMapRef:
+            name: sovereign-config
+        ports:
+        - containerPort: 15500
+          protocol: UDP
+          name: sigint-mesh
+        - containerPort: 8080
+          protocol: TCP
+          name: c2-dashboard
+        # Disjoncteurs matériels stricts
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m" # 1/4 de cœur CPU
+          limits:
+            memory: "256Mi" # Prévention OOM (Out Of Memory)
+            cpu: "500m"     # Prévention du Thermal Throttling
+        securityContext:
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
 
